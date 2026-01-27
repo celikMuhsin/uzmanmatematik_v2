@@ -100,6 +100,18 @@
     margin-bottom: 5px;
 }
 
+#col-detail-title {
+    font-size: 1.1rem;
+    /* Reduced from 2rem, slightly larger than body (0.95rem) */
+    font-weight: 800;
+    /* Bold */
+    margin-top: -5px !important;
+    /* Adjusted spacing */
+    margin-bottom: 20px;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .news-layout-grid {

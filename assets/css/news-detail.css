@@ -46,7 +46,8 @@
 .article-content {
     line-height: 1.8;
     color: #2c3e50;
-    font-size: 1.15rem;
+    font-size: 0.95rem;
+    /* Reduced from 1.15rem */
 }
 
 .article-image {
