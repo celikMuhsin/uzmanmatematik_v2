@@ -1,0 +1,210 @@
+/* Internal Game Styles */
+.game-header-internal {
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+}
+
+.lobby-internal {
+    padding: 20px 0;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.filter-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.start-btn {
+    background: var(--accent-color);
+    color: white;
+    font-size: 1.2rem;
+    padding: 12px 40px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    transition: transform 0.2s;
+}
+
+.start-btn:hover {
+    transform: scale(1.05);
+}
+
+#internal-game-play-area {
+    animation: fadeIn 0.4s ease;
+}
+
+.score-circle-small {
+    background: #e0f2fe;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 1px solid #bae6fd;
+}
+
+/* Memory Game (Open Cards) */
+.memory-game-btn {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+    transition: all 0.3s ease;
+    display: inline-block;
+    width: 100%;
+}
+
+.memory-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+}
+
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.mem-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #334155;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    word-break: break-word;
+    line-height: 1.2;
+    pointer-events: auto !important;
+    /* Force clickable */
+    user-select: none;
+    /* Prevent text selection */
+    position: relative;
+    z-index: 10;
+}
+
+.mem-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+}
+
+.mem-card.selected {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.mem-card.matched {
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Aesthetic Timer Badge */
+.timer-badge {
+    background: #f1f5f9;
+    color: #334155;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.timer-badge.warning {
+    background: #fff1f2;
+    color: #e11d48;
+    border-color: #fecdd3;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Aesthetic Close Button */
+.close-btn-aesthetic {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.close-btn-aesthetic:hover {
+    background: #e2e8f0;
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+/* Updated Button Style Override */
+.back-btn-styled {
+    display: inline-flex !important;
+    justify-content: center;
+    align-items: center;
+    width: auto !important;
+    min-width: 140px;
+    padding: 10px 25px !important;
+}

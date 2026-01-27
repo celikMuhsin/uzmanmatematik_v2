@@ -1,0 +1,265 @@
+/* Contact Page Layout */
+#contact-page {
+    width: 100%;
+    padding: 20px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+#contact-page .section-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Left Column: Form & Info */
+.contact-left {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.contact-info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.2s;
+    border: 1px solid #eee;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+}
+
+.info-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.info-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.info-text {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+/* Form Styles */
+.contact-form .form-group {
+    margin-bottom: 20px;
+}
+
+.contact-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.send-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.send-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+/* Right Column: Guestbook Wall */
+.contact-right {
+    background: #fff8e1;
+    /* Post-it yellow background feel */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.guestbook-title {
+    font-family: 'Handlee', cursive, 'Poppins', sans-serif;
+    /* Fallback to Poppins if Handlee not loaded */
+    text-align: center;
+    color: #d35400;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    border-bottom: 2px dashed #d35400;
+    padding-bottom: 10px;
+    display: inline-block;
+    width: 100%;
+}
+
+.guestbook-wall {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom Scrollbar for guestbook */
+.guestbook-wall::-webkit-scrollbar {
+    width: 8px;
+}
+
+.guestbook-wall::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.guestbook-wall::-webkit-scrollbar-thumb {
+    background: #d35400;
+    border-radius: 4px;
+}
+
+.guest-note {
+    background: white;
+    padding: 15px;
+    border-radius: 2px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border-left: 4px solid #f1c40f;
+    transform: rotate(-1deg);
+    transition: transform 0.2s;
+}
+
+.guest-note:nth-child(even) {
+    transform: rotate(1deg);
+    border-left-color: #e67e22;
+}
+
+.guest-note:hover {
+    transform: scale(1.02) rotate(0deg);
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.guest-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.guest-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.guest-message {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* FAQ Section */
+.faq-section {
+    margin-top: 50px;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 15px 20px;
+    background: #fdfdfd;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+}
+
+.faq-question:hover {
+    background: #f0f0f0;
+}
+
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s;
+    background: white;
+    color: #666;
+    line-height: 1.6;
+}
+
+.faq-item.active .faq-answer {
+    padding: 15px 20px;
+    max-height: 200px;
+    /* Approximate max height */
+    border-top: 1px solid #eee;
+}
+
+.faq-icon {
+    transition: transform 0.3s;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saniye Savaşları - Uzman Matematik</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Settings View */
+        .settings-group {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Game View */
+        .number-display {
+            font-size: 8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 40px 0;
+            transition: transform 0.2s;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--secondary-color);
+            width: 100%;
+            transform-origin: left;
+        }
+
+        .counter-badge {
+            background: var(--bg-color);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        /* Result View */
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-color);
+            border-radius: 50%;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .score-box {
+            font-size: 3rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="https://placehold.co/40x40/transparent/white?text=UM" alt="Logo" class="logo-img">
+                UzmanMatematik
+            </a>
+            <div style="color: white; font-weight: bold;">Saniye Savaşları</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- View 1: Settings / Start -->
+        <div id="start-view" class="game-container">
+            <h1 style="color: var(--primary-color); margin-bottom: 10px;">⏱️ Saniye Savaşları</h1>
+            <p style="margin-bottom: 30px; color: var(--text-light);">
+                Sırayla gelen sayıları aklında tut ve topla.<br>
+                Yanlış cevabın bedeli süreyle çarpılır!
+            </p>
+
+            <div class="settings-group">
+                <label class="settings-label">Sayı Adedi</label>
+                <input type="number" id="count-input" class="settings-input" value="10" min="3" max="50">
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Her Sayı İçin Süre (Saniye)</label>
+                <input type="number" id="duration-input" class="settings-input" value="1" min="0.5" max="5" step="0.5">
+            </div>
+
+            <button class="btn" onclick="startGame()">Oyunu Başlat</button>
+
+            <div style="margin-top: 30px;">
+                <h4>🏆 En Yüksek Skor: <span id="high-score">0</span></h4>
+            </div>
+        </div>
+
+        <!-- View 2: Gameplay -->
+        <div id="game-view" class="game-container" style="display: none;">
+            <div class="counter-badge" id="counter-badge">1 / 10</div>
+
+            <div class="number-display" id="number-display">Ready?</div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- View 3: Input Result -->
+        <div id="input-view" class="game-container" style="display: none;">
+            <h2>Sayıların Toplamı Kaçtır?</h2>
+            <input type="number" id="sum-input" class="settings-input"
+                style="max-width: 200px; text-align: center; font-size: 2rem; margin: 20px 0;" autofocus>
+            <button class="btn" onclick="checkResult()">Sonucu Kontrol Et</button>
+        </div>
+
+        <!-- View 4: Score/Summary -->
+        <div id="result-view" class="game-container" style="display: none;">
+            <h2 id="result-title">Tebrikler!</h2>
+
+            <div class="score-box" id="final-score">100</div>
+            <p id="score-details" style="color: var(--text-light);"></p>
+
+            <div style="margin-top: 20px;">
+                <h4>Gelen Sayılar:</h4>
+                <div class="history-list" id="history-list">
+                    <!-- JS Injected -->
+                </div>
+                <div style="font-size: 1.2rem; margin-top: 10px;">
+                    Gerçek Toplam: <span id="true-sum" style="font-weight: bold;">0</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button class="btn" onclick="location.reload()">Tekrar Oyna</button>
+                <a href="index.html" class="btn btn-outline">Ana Sayfa</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="assets/js/saniye-savaslari.js"></script>
+</body>
+
+</html>

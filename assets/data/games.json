@@ -1,0 +1,51 @@
+[
+    {
+        "id": 1,
+        "title": "Hızlı İşlem Yarışı",
+        "description": "Zamana karşı yarışarak dört işlem yeteneğini geliştir.",
+        "thumbnail": "https://placehold.co/600x400/8e44ad/ffffff?text=Hizli+Islem",
+        "url": "#"
+    },
+    {
+        "id": 2,
+        "title": "Kesir Canavarı",
+        "description": "Canavarları beslemek için doğru kesirleri eşleştir.",
+        "thumbnail": "https://placehold.co/600x400/2980b9/ffffff?text=Kesir+Canavari",
+        "url": "#"
+    },
+    {
+        "id": 3,
+        "title": "Geometri Bulmacası",
+        "description": "Verilen parçaları birleştirerek şekilleri tamamla.",
+        "thumbnail": "https://placehold.co/600x400/c0392b/ffffff?text=Bulmaca",
+        "url": "#"
+    },
+    {
+        "id": 4,
+        "title": "Saniye Savaşları",
+        "description": "Zamana karşı görsel hafıza ve işlem oyunu. Sayıları aklında tut ve topla!",
+        "thumbnail": "https://placehold.co/600x400/f39c12/ffffff?text=Saniye+Savaslari",
+        "url": "javascript:showPage('saniye-game')"
+    },
+    {
+        "id": 5,
+        "title": "Kuvvet Avcısı",
+        "description": "Üslü sayılarda uzmanlaş! Kuvvetleri tanı, hızlı cevapla, bonusları topla.",
+        "thumbnail": "https://placehold.co/600x400/8e44ad/ffffff?text=Kuvvet+Avcisi",
+        "url": "javascript:showPage('kuvvet-game')"
+    },
+    {
+        "id": 6,
+        "title": "Denklik Arenası",
+        "description": "Denk kesirleri eşleştir, komboları yakala ve kesirler dünyasında en yüksek skoru yap!",
+        "thumbnail": "https://placehold.co/600x400/4f46e5/ffffff?text=Denklik+Arenasi",
+        "url": "javascript:showPage('denklik-game')"
+    },
+    {
+        "id": 7,
+        "title": "Edebiyat Kalkanı",
+        "description": "Fizik tabanlı cevap avı, eşleştirme masası ve klasik test modlarıyla edebiyat bilgini ölç!",
+        "thumbnail": "https://placehold.co/600x400/0f172a/ffffff?text=Edebiyat+Kalkani",
+        "url": "javascript:showPage('edebiyat-game')"
+    }
+]

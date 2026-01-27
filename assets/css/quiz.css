@@ -1,0 +1,157 @@
+/* Quiz Specific Styles */
+.quiz-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--bg-color);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.timer-box {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    background: #fff3e0;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.question-card {
+    margin-bottom: 30px;
+}
+
+.question-text {
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+/* Dynamic Option Grids */
+.options-grid {
+    display: grid;
+    gap: 15px;
+}
+
+/* 1. All in one row (Short) */
+.layout-row {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* 2. 3 up, 2 down (Medium) */
+.layout-split {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.layout-split .option-btn:nth-child(1),
+.layout-split .option-btn:nth-child(2),
+.layout-split .option-btn:nth-child(3) {
+    grid-column: span 2;
+}
+
+.layout-split .option-btn:nth-child(4) {
+    grid-column: 2 / span 2;
+}
+
+.layout-split .option-btn:nth-child(5) {
+    grid-column: 4 / span 2;
+}
+
+/* 3. 5 rows (Long) */
+.layout-stack {
+    grid-template-columns: 1fr;
+}
+
+.option-btn {
+    background: var(--bg-color);
+    border: none;
+    padding: 15px;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.option-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.option-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.quiz-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+}
+
+/* Result Screen */
+.result-screen {
+    text-align: center;
+    display: none;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 30px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(44, 62, 80, 0.3);
+}
+
+.score-label {
+    font-size: 1rem;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+.stats-box {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    justify-content: center;
+}
+
+.stat-item {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.stat-correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.stat-wrong {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.stat-empty {
+    background: #e2e3e5;
+    color: #383d41;
+}

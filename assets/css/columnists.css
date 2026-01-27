@@ -1,0 +1,118 @@
+/* News Page Grid Layout */
+.news-layout-grid {
+    display: grid;
+    grid-template-columns: 65% 32%;
+    /* Slider takes ~2/3 */
+    gap: 3%;
+    margin-bottom: 40px;
+}
+
+.news-left {
+    /* Slider Container */
+}
+
+/* Columnists Section */
+.columnists-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+}
+
+.columnist-header {
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.columnist-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.columnist-item:last-child {
+    border-bottom: none;
+}
+
+.columnist-item:hover {
+    background-color: var(--bg-color);
+    padding-left: 5px;
+    /* Slide effect */
+}
+
+.col-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+}
+
+.col-info {
+    flex: 1;
+}
+
+.col-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.col-title {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Columnist Detail View */
+.author-profile-large {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+#col-detail-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary-color);
+}
+
+.author-info h2 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .news-layout-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Zero out all margins for tight mobile layout */
+    .news-left {
+        margin-bottom: 0px !important;
+    }
+
+    .news-layout-grid {
+        margin-bottom: 0px !important;
+        gap: 0px !important;
+    }
+}

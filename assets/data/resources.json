@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "title": "Çarpım Tablosu Çalışma Kağıdı",
+        "type": "PDF",
+        "url": "#",
+        "size": "1.2 MB"
+    },
+    {
+        "id": 2,
+        "title": "LGS Matematik Deneme Sınavı",
+        "type": "PDF",
+        "url": "#",
+        "size": "2.5 MB"
+    },
+    {
+        "id": 3,
+        "title": "Geometri Formül Kartları",
+        "type": "ZIP",
+        "url": "#",
+        "size": "4.8 MB"
+    }
+]

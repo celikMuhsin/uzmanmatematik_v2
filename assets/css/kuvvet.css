@@ -1,0 +1,206 @@
+/* Kuvvet Avcısı Game Styles */
+:root {
+    --ka-bg-slate-50: #f8fafc;
+    --ka-bg-amber-50: #fffbeb;
+    --ka-text-slate-800: #1e293b;
+    --ka-indigo-600: #4f46e5;
+}
+
+.ka-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 3rem;
+    border-radius: 2rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    min-height: 450px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.ka-title {
+    font-size: 1.875rem;
+    font-weight: 900;
+    color: #1e293b;
+}
+
+/* Config View */
+.difficulty-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.diff-btn {
+    padding: 1.25rem;
+    border-radius: 1rem;
+    border: 4px solid transparent;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.diff-btn.easy-selected {
+    border-color: #059669;
+    background: #ecfdf5;
+}
+
+.diff-btn.medium-selected {
+    border-color: #d97706;
+    background: #fffbeb;
+}
+
+.diff-btn.hard-selected {
+    border-color: #e11d48;
+    background: #fff1f2;
+}
+
+.diff-btn.unselected {
+    border-color: #f1f5f9;
+    background: white;
+}
+
+.start-btn {
+    width: 100%;
+    background: #4f46e5;
+    color: white;
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+    font-weight: 900;
+    font-size: 1.25rem;
+    box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.start-btn:hover {
+    transform: translateY(-4px);
+    background: #4338ca;
+}
+
+/* Playing View */
+.game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+.progress-track {
+    width: 12rem;
+    height: 0.5rem;
+    background: #f1f5f9;
+    border-radius: 9999px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4f46e5;
+    transition: width 0.1s linear;
+}
+
+.question-box {
+    width: 100%;
+    min-height: 160px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.options-grid.centered-flex {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.opt-btn {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    border: 4px solid #f1f5f9;
+    background: white;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.opt-btn:hover {
+    border-color: #4f46e5;
+}
+
+/* Keyframes */
+@keyframes gentle-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes gentle-bounce {
+
+    0%,
+    100% {
+        transform: none;
+        background-color: #f8fafc;
+    }
+
+    50% {
+        transform: none;
+        background-color: #f0fdf4;
+        /* Light green pulse */
+    }
+}
+
+.animate-shake {
+    animation: gentle-shake 0.15s ease-in-out 3;
+}
+
+.animate-bounce {
+    animation: gentle-bounce 0.4s ease-in-out 1;
+}
+
+#kuvvet-playing-view {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}

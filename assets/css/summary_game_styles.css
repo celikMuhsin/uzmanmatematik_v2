@@ -1,0 +1,60 @@
+/* Summary Game Specifics */
+#sum-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+#sum-options-grid .option-btn {
+    min-height: 80px;
+    /* Taller buttons for readability */
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+    background: white;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #444;
+}
+
+#sum-options-grid .option-btn:hover {
+    border-color: #8b5cf6;
+    background: #f5f3ff;
+}
+
+#sum-options-grid .option-btn.correct {
+    background-color: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+}
+
+#sum-options-grid .option-btn.wrong {
+    background-color: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+}
+
+#sum-question-text {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #8b5cf6;
+    font-size: 1.15rem;
+    color: #333;
+    line-height: 1.7;
+}
+
+/* Response for Mobile */
+@media (max-width: 600px) {
+    #sum-options-grid {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
+}

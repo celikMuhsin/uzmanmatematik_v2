@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Temel Aritmetik İşlemler",
+    "description": "Toplama, çıkarma, çarpma ve bölme işlemlerinin mantığını kavrayın.",
+    "thumbnail": "https://placehold.co/600x400/2c3e50/ffffff?text=Aritmetik",
+    "url": "https://www.youtube.com/watch?v=placeholder1",
+    "category": "Temel Matematik"
+  },
+  {
+    "id": 2,
+    "title": "Kesirlerde Sadeleştirme",
+    "description": "Kesirleri en sade hale getirmeyi öğrenin.",
+    "thumbnail": "https://placehold.co/600x400/e67e22/ffffff?text=Kesirler",
+    "url": "https://www.youtube.com/watch?v=placeholder2",
+    "category": "Cebir"
+  },
+  {
+    "id": 3,
+    "title": "Üçgenin Alanı Nasıl Bulunur?",
+    "description": "Geometrik şekillerden üçgenin alan formülünün ispatı ve örnekler.",
+    "thumbnail": "https://placehold.co/600x400/27ae60/ffffff?text=Geometri",
+    "url": "https://www.youtube.com/watch?v=placeholder3",
+    "category": "Geometri"
+  }
+]

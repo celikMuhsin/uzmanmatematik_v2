@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Matematik Sınavı - Uzman Matematik</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>➗</text></svg>">
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .timer-box {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            background: #fff3e0;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        /* Stats removed from header as per request */
+
+        .question-card {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            /* Increased size */
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        /* Dynamic Option Grids */
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        /* 1. All in one row (Short) */
+        .layout-row {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        /* 2. 3 up, 2 down (Medium) */
+        .layout-split {
+            grid-template-columns: repeat(6, 1fr);
+            /* 6 columns to span */
+        }
+
+        .layout-split .option-btn:nth-child(1),
+        .layout-split .option-btn:nth-child(2),
+        .layout-split .option-btn:nth-child(3) {
+            grid-column: span 2;
+            /* 3 items fill 6 cols */
+        }
+
+        .layout-split .option-btn:nth-child(4) {
+            grid-column: 2 / span 2;
+            /* Centered in bottom row */
+        }
+
+        .layout-split .option-btn:nth-child(5) {
+            grid-column: 4 / span 2;
+        }
+
+        /* 3. 5 rows (Long) */
+        .layout-stack {
+            grid-template-columns: 1fr;
+        }
+
+        .option-btn {
+            background: var(--bg-color);
+            border: none;
+            /* No border */
+            padding: 15px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+            /* Bigger font */
+            box-shadow: var(--shadow-sm);
+            /* Soft shadow instead of border */
+        }
+
+        .option-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(44, 62, 80, 0.3);
+        }
+
+        .score-label {
+            font-size: 1rem;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .stats-box {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            justify-content: center;
+            /* Center these in result screen */
+        }
+
+        .stat-item {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .stat-correct {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stat-wrong {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stat-empty {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Simplified Header for Quiz -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="https://placehold.co/40x40/transparent/white?text=UM" alt="Logo" class="logo-img">
+                UzmanMatematik
+            </a>
+            <div style="color: white; font-weight: bold;">Online Deneme Sınavı</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="quiz-container" style="text-align: center;">
+            <h1>Matematik Deneme Sınavı</h1>
+            <p style="margin: 20px 0; font-size: 1.1rem;">
+                Sınav 20 sorudan oluşmaktadır. Süre 40 dakikadır. Her soru 5 puandır. Başarılar!<br>
+            </p>
+            <div style="margin-bottom: 30px;">
+                <input type="text" id="username-input" placeholder="Adınız Soyadınız"
+                    style="padding: 10px; font-size: 1rem; width: 300px; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <button class="btn" onclick="startQuiz()">Sınava Başla</button>
+
+            <div style="margin-top: 40px; text-align: left;">
+                <h3>🏆 Skor Tablosu</h3>
+                <ul id="scoreboard-list" class="sidebar-links" style="margin-top: 10px;">
+                    <!-- Filled by JS -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="quiz-container" style="display: none;">
+            <div class="quiz-header">
+                <div style="font-size: 1.2rem; font-weight: bold;">
+                    Soru: <span id="current-q-num">1</span> / 20
+                </div>
+                <!-- Stats Removed -->
+                <div class="timer-box" id="timer">40:00</div>
+            </div>
+
+            <div class="question-card" id="question-container">
+                <!-- Question injected here -->
+            </div>
+
+            <div class="quiz-controls">
+                <button class="btn btn-outline" id="prev-btn" onclick="changeQuestion(-1)" disabled>Önceki</button>
+                <button class="btn" id="next-btn" onclick="changeQuestion(1)">Sonraki</button>
+                <button class="btn" id="finish-btn" onclick="finishQuiz()"
+                    style="background-color: var(--accent-color); display: none;">Sınavı Bitir</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="quiz-container result-screen">
+            <h2>Sınav Tamamlandı!</h2>
+            <div class="score-circle">
+                <span id="final-score">85</span>
+                <span class="score-label">Puan</span>
+            </div>
+            <div class="stats-box" style="justify-content: center; margin-bottom: 30px; font-size: 1.2rem;">
+                <div class="stat-item stat-correct">Doğru: <span id="res-correct">17</span></div>
+                <div class="stat-item stat-wrong">Yanlış: <span id="res-wrong">3</span></div>
+                <div class="stat-item stat-empty">Boş: <span id="res-empty">0</span></div>
+            </div>
+            <p id="time-taken-text"></p>
+            <button class="btn" onclick="location.reload()">Tekrar Dene</button>
+            <a href="index.html" class="btn btn-outline">Ana Sayfaya Dön</a>
+        </div>
+
+    </div>
+
+    <script src="assets/js/quiz.js"></script>
+</body>
+
+</html>

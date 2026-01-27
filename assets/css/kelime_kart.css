@@ -1,0 +1,1092 @@
+:root {
+    --bg-page: #f4f6f8;
+    --bg-paper: #ffffff;
+    --text-main: #2d3748;
+    --text-light: #718096;
+    --accent: #2b6cb0;
+    /* Güven veren güçlü mavi */
+    --accent-light: #ebf8ff;
+    --border: #e2e8f0;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --section-gap: 24px;
+
+    /* Seviye Renkleri */
+    --lvl-a1: #48bb78;
+    --lvl-a2: #4299e1;
+    --lvl-b1: #ecc94b;
+    --lvl-b2: #ed8936;
+    --lvl-c1: #e53e3e;
+    --lvl-c2: #742a2a;
+    /* Darker Red/Brown for C2 */
+}
+
+#vocabulary-wrapper {
+    display: block;
+    padding: 0;
+    background: var(--bg-page);
+    min-height: auto;
+    width: 100%;
+    margin-bottom: 40px;
+    overflow: visible;
+    /* Ensure sticky works */
+}
+
+.vocab-card {
+    background: var(--bg-paper);
+    width: 100%;
+    max-width: 900px;
+    /* Okuma genişliği */
+    margin: 0 auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    /* Daha az yuvarlak, daha "kağıt" gibi */
+    position: relative;
+    border: 1px solid var(--border);
+    font-family: var(--font-body);
+    overflow: visible;
+    /* CRITICAL for sticky */
+}
+
+/* --- Navigation Header (Controls) --- */
+/* --- Sticky Wrapper --- */
+.sticky-header-wrapper {
+    position: -webkit-sticky;
+    /* iOS Safari */
+    position: sticky;
+    top: 70px;
+    z-index: 900;
+    background: #fff;
+    /* Ensure bg covers scrolling content */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--border);
+    margin-top: -1px;
+    /* Prevent visual gap */
+    width: 100%;
+}
+
+/* JS-Activated Fixed Class for Mobile */
+.sticky-header-wrapper.mobile-fixed {
+    position: fixed !important;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    z-index: 900;
+    animation: slideDown 0.2s ease-out;
+    /* Smooth entry */
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Sticky Header Offset Fix */
+[id^="sec-"] {
+    scroll-margin-top: 100px;
+    /* Reduced since controls are gone */
+}
+
+@media (max-width: 768px) {
+    .sticky-header-wrapper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        /* Ensure no corners cut content */
+    }
+}
+
+/* --- Navigation Header (Controls) --- */
+.controls-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    /* Reduced vertical padding */
+    border-bottom: 1px dashed var(--border);
+    height: 50px;
+    /* Fixed height for consistency */
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    /* Clear padding for icon centering */
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: var(--bg-page);
+    border-color: var(--text-light);
+    transform: scale(1.05);
+    /* Slight pop */
+}
+
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.nav-counter {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.section-nav {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #f8fafc;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+}
+
+.section-nav:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+}
+
+/* --- Layout Structure --- */
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* Sol ana içerik, Sağ yan panel (masaüstü) */
+    gap: 0;
+}
+
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        /* Mobilde tek sütun */
+    }
+}
+
+/* --- Sol Ana Panel --- */
+.main-content {
+    padding: 20px 30px 30px 30px;
+    border-right: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        order: 1;
+        /* Ana içerik ilk gelsin */
+    }
+
+    .side-panel {
+        order: 2;
+        /* Yan panel sonra gelsin */
+        padding: 20px;
+    }
+}
+
+/* Başlık Bloğu */
+/* Başlık Bloğu */
+.word-header {
+    margin-bottom: 0px;
+    padding: 10px 30px;
+    /* Slightly more compact */
+    background: #fff;
+}
+
+.word-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Mobilde taşarsa aşağı insin */
+    gap: 15px;
+}
+
+.word-left-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ... existing code ... */
+
+/* Antonym Cards - Improved */
+.antonym-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.antonym-card {
+    background: #fff;
+    border: 1px solid #fed7d7;
+    border-left: 4px solid #f56565;
+    padding: 10px 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.antonym-card:hover {
+    transform: translateX(2px);
+}
+
+.antonym-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    border-bottom: 1px dashed #fed7d7;
+    padding-bottom: 4px;
+}
+
+.antonym-word {
+    font-weight: 700;
+    color: #c53030;
+    font-size: 1rem;
+}
+
+.antonym-val {
+    font-size: 0.75rem;
+    color: #fff;
+    background: #f56565;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.antonym-tr {
+    font-size: 0.9rem;
+    color: #2d3748;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.antonym-note {
+    font-size: 0.8rem;
+    color: #718096;
+    font-style: italic;
+}
+
+.antonym-warning {
+    font-size: 0.75rem;
+    color: #9b2c2c;
+    background: #fff5f5;
+    padding: 4px;
+    border-radius: 4px;
+    margin-top: 6px;
+    display: inline-block;
+    border: 1px solid #feb2b2;
+}
+
+.word-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.main-word {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+}
+
+.phonetics-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ipa {
+    font-family: 'Courier New', monospace;
+    color: var(--text-light);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.audio-mini-btn {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-size: 1.1rem;
+    /* Slightly larger icon */
+}
+
+.audio-mini-btn:hover {
+    transform: scale(1.1);
+    background: #bee3f8;
+}
+
+.word-meta {
+    margin-bottom: 5px;
+    /* Moved to top, so margin bottom needed */
+    margin-top: 0;
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Bölüm Stilleri */
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: none;
+    /* Küçük harf (Normal yazım) */
+    margin-top: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    /* Yeni Vurgu Stili */
+    border-left: 4px solid var(--accent);
+    padding: 8px 12px;
+    background: linear-gradient(90deg, var(--accent-light) 0%, rgba(255, 255, 255, 0) 90%);
+    border-radius: 0 4px 4px 0;
+}
+
+/* Çizgiyi kaldırıyoruz */
+.section-title::after {
+    display: none;
+}
+
+.study-block {
+    margin-bottom: 30px;
+}
+
+/* Anlam Kartları */
+.definition-box {
+    background-color: #fff;
+    margin-bottom: 15px;
+}
+
+.def-row {
+    margin-bottom: 10px;
+}
+
+.meaning-en {
+    font-weight: 600;
+    color: #1a202c;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.meaning-tr {
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-top: 2px;
+}
+
+.example-box {
+    background: var(--bg-page);
+    padding: 10px 15px;
+    border-left: 3px solid var(--text-light);
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-top: 8px;
+    border-radius: 0 4px 4px 0;
+}
+
+.example-tr {
+    color: #718096;
+    font-style: italic;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* Gramer Tablosu Gibi Yapı */
+.grammar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.grammar-item {
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.grammar-pattern {
+    font-family: monospace;
+    font-weight: bold;
+    color: #d53f8c;
+    font-size: 0.9rem;
+    background: #fff5f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 6px;
+}
+
+.grammar-note {
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+/* --- Sağ Yan Panel (Side Bar) --- */
+.side-panel {
+    background: #fafbfc;
+    padding: 30px 20px;
+}
+
+@media (max-width: 768px) {
+    .side-panel {
+        padding: 20px;
+        background: #fff;
+        border-top: 5px solid var(--bg-page);
+        /* Ayırıcı */
+    }
+}
+
+.side-block {
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+}
+
+/* Türevler Listesi */
+.derivative-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.derivative-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.derivative-item:hover {
+    background: #f0f4f8;
+    padding-left: 5px;
+    /* Hover efekti */
+}
+
+.der-word {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.der-pos {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    background: #edf2f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+}
+
+.der-note {
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-align: right;
+    flex-grow: 1;
+}
+
+/* İlerleme Tablosu */
+.progression-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.progression-table th {
+    text-align: left;
+    color: var(--text-light);
+    padding-bottom: 8px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+}
+
+.progression-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+}
+
+.cefr-tag {
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Renkler */
+.tag-A1 {
+    background: var(--lvl-a1);
+}
+
+.tag-A2 {
+    background: var(--lvl-a2);
+}
+
+.tag-B1 {
+    background: var(--lvl-b1);
+}
+
+.tag-B2 {
+    background: var(--lvl-b2);
+}
+
+.tag-C1 {
+    background: var(--lvl-c1);
+}
+
+.tag-C2 {
+    background: var(--lvl-c2);
+    color: #fff;
+    /* Ensure readable text */
+}
+
+/* Uyarı Kutuları (Common Errors) */
+.alert-box {
+    background: #fff5f5;
+    border-left: 4px solid #fc8181;
+    padding: 12px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.alert-wrong {
+    text-decoration: line-through;
+    color: #e53e3e;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+}
+
+.alert-correct {
+    color: #38a169;
+    font-weight: 600;
+    display: block;
+}
+
+/* Etimoloji */
+.timeline-path {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px solid var(--border);
+    margin-left: 5px;
+}
+
+.timeline-step {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.timeline-step::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    position: absolute;
+    left: -26px;
+    top: 4px;
+}
+
+.timeline-era {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.timeline-content {
+    font-size: 0.9rem;
+}
+
+/* Küçük Detaylar */
+.meta-chip {
+    background: var(--bg-page);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+}
+
+/* Stories Section */
+.story-container {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.story-header {
+    background: #f7fafc;
+    padding: 10px 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.story-content {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 600px) {
+    .story-content {
+        flex-direction: row;
+    }
+}
+
+.story-lang {
+    flex: 1;
+    padding: 15px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.story-lang.turkish {
+    background: #fff;
+    color: #4a5568;
+    border-right: 1px solid var(--border);
+}
+
+.story-lang.english {
+    background: #fcfdfe;
+    /* Hafif farklı ton */
+    color: #2d3748;
+}
+
+.story-lang h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+}
+
+.story-lang p {
+    margin: 0;
+}
+
+.story-lang strong {
+    color: var(--accent);
+    /* Kelime vurgusu */
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .story-lang.turkish {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+}
+
+/* --- NEW SECTIONS STYLES --- */
+
+/* Collocations */
+.collo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 600px) {
+    .collo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.collo-header {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.collo-item {
+    background: #fcfdfe;
+    border: 1px solid var(--border);
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.collo-word {
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+}
+
+.collo-example {
+    color: var(--text-light);
+    font-size: 0.8rem;
+    font-style: italic;
+    display: block;
+}
+
+/* Pragmatics (Idioms) */
+.idiom-card {
+    background: #fff;
+    border-left: 3px solid #ecc94b;
+    /* Yellow for idioms */
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.idiom-phrase {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.idiom-meaning {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.note-box {
+    background: #ebf8ff;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    color: #2c5282;
+}
+
+/* Grammar Logic */
+.logic-box {
+    margin-top: 15px;
+    background: #fffaf0;
+    /* Light orange */
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px dashed #ed8936;
+}
+
+.logic-title {
+    font-weight: 700;
+    color: #c05621;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.logic-compare {
+    background: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.logic-examples .wrong {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.logic-examples .right {
+    color: #38a169;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Lexical Nuance */
+.nuance-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.scale-title {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+
+.scale-item {
+    background: var(--accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+.tag-antonym {
+    background: #ffe5e5;
+    color: #c53030;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+/* Cognate Hint */
+.hint-box {
+    margin-top: 20px;
+    background: #f0fff4;
+    border: 1px solid #c6f6d5;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.hint-title {
+    font-weight: 700;
+    color: #2f855a;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
+
+/* Antonym Cards */
+.antonym-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.antonym-card {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.antonym-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.antonym-word {
+    font-weight: 700;
+    color: #c53030;
+}
+
+.antonym-val {
+    font-size: 0.7rem;
+    color: #9b2c2c;
+    background: #fed7d7;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.antonym-tr {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #4a5568;
+}
+
+.antonym-note {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-top: 2px;
+}
+
+.antonym-warning {
+    font-size: 0.7rem;
+    color: #e53e3e;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Cognate Hint Box - Comparison Design */
+/* Cognate Hint Box - Clean & Open Design */
+.hint-box {
+    margin-top: 25px;
+    background: #f0fff4;
+    /* Keep the subtle green tint for the whole section */
+    border-top: 2px solid #38b2ac;
+    /* Just a top border definition */
+    border-bottom: 2px solid #38b2ac;
+    padding: 15px 5px;
+    /* Minimal padding */
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Remove the icon content */
+.hint-box::before {
+    display: none;
+}
+
+.hint-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #234e52;
+    margin-bottom: 12px;
+    text-align: left;
+    /* Sola yasla */
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    padding: 0 0 0 5px;
+}
+
+.hint-story {
+    font-size: 0.9rem;
+    /* Fontu küçült */
+    color: #2f855a;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    text-align: left;
+    /* Sola yasla */
+    padding: 0 5px;
+}
+
+/* The 'Bridge' text */
+.hint-bridge {
+    background: transparent;
+    color: #319795;
+    font-size: 0.85rem;
+    /* Fontu küçült */
+    font-weight: 600;
+    padding: 0 5px 8px 5px;
+    border: none;
+    border-bottom: 2px solid #b2f5ea;
+    margin-bottom: 10px;
+    display: block;
+    font-style: italic;
+    border-radius: 0;
+    text-align: left;
+}
+
+.hint-bridge::before {
+    display: none;
+}
+
+/* The List */
+.hint-list {
+    list-style: none;
+    padding: 0 5px;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.hint-list li {
+    padding: 0 0 12px 0;
+    border-bottom: 1px dashed #cbd5e0;
+    color: #4a5568;
+    line-height: 1.4;
+    font-size: 0.85rem;
+    /* Fontu küçült */
+    position: relative;
+    padding-left: 18px;
+    /* Bullet için yer */
+    background: transparent;
+    margin: 0;
+    margin-bottom: 8px;
+    border-left: none;
+    text-align: left;
+}
+
+.hint-list li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Bullets aligned correctly next to the first line */
+.hint-list li:nth-child(even)::before {
+    content: "•";
+    color: #3182ce;
+    font-weight: bold;
+    font-size: 1.5em;
+    position: absolute;
+    left: 0;
+    top: -2px;
+    /* Hafif yukarı çekip hizala */
+    line-height: 1;
+}
+
+.hint-list li:nth-child(even) {
+    border-left: none;
+    background: transparent;
+}
+
+.hint-list li:nth-child(odd)::before {
+    content: "•";
+    color: #d69e2e;
+    font-weight: bold;
+    font-size: 1.5em;
+    position: absolute;
+    left: 0;
+    top: -2px;
+    line-height: 1;
+}
+
+.hint-list li:nth-child(odd) {
+    border-left: none;
+    background: transparent;
+}
+
+.hint-list strong {
+    display: inline;
+    font-size: 0.9rem;
+    color: #2c3e50;
+    font-weight: 800;
+    margin: 0;
+    margin-right: 4px;
+}

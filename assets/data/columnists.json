@@ -1,0 +1,120 @@
+[
+    {
+        "id": 1,
+        "name": "Öğr.Gör. Muhsin ÇELİK",
+        "title": "Matematik Eğitiminde Yeni Yaklaşımlar",
+        "role": "Matematik Koordinatörü",
+        "category": "Eğitim Yazıları",
+        "image": "assets/images/yazarlar/muhsin_celik.png",
+        "content": [
+            "Matematik öğretimi, sadece formüllerin ezberletilmesi değil, bu formüllerin arkasındaki mantığın kavratılması sürecidir.",
+            "Son yıllarda yapılan araştırmalar, oyun tabanlı öğrenmenin (gamification) öğrencilerin derse olan ilgisini %60 oranında artırdığını gösteriyor. Biz de Uzman Matematik olarak bu vizyonla yola çıktık.",
+            "Öğrencilerimiz artık soyut kavramlarla boğuşmak yerine, onları somutlaştıran interaktif araçlarla öğreniyorlar. Bu süreçte öğretmenin rolü de 'bilgi aktarıcı'dan 'rehber'e dönüşüyor."
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Ali Emir ÇELİK",
+        "title": "LGS'ye Hazırlık Sürecinde Velilere Tavsiyeler",
+        "role": "LGS Rehberlik Uzmanı",
+        "category": "Eğitim Yazıları",
+        "image": "assets/images/yazarlar/ali_emir_celik.jpg",
+        "content": [
+            "Sınav süreci sadece öğrenciyi değil, tüm aileyi etkileyen bir maratondur. Bu süreçte velilerin en büyük hatası, çocuklarını başkalarıyla kıyaslamaktır.",
+            "Her öğrencinin öğrenme hızı ve yöntemi farklıdır. Önemli olan dünkü halinden daha iyi olmasıdır. Destekleyici bir tutum, başarıyı getiren en önemli anahtardır.",
+            "Stres yönetimi konusunda profesyonel destek almaktan çekinmeyin."
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Hayal Nehir ÇELİK",
+        "title": "Teknoloji ve Eğitim: Nereye Gidiyoruz?",
+        "role": "Eğitim Teknoloğu",
+        "category": "Teknoloji Yazıları",
+        "image": "https://placehold.co/150x150/27ae60/ffffff?text=Hayal+Nehir",
+        "content": [
+            "Yapay zeka, sanal gerçeklik ve kişiselleştirilmiş öğrenme algoritmaları... Eğitim dünyası baş döndürücü bir hızla değişiyor. Peki biz buna hazır mıyız?",
+            "Geleneksel sınıf ortamları yerini hibrit modellere bırakıyor. Artık 'okul' dört duvarla sınırlı bir yer değil, bilginin olduğu her yerdir.",
+            "Dijital okuryazarlık, matematik okuryazarlığı kadar elzem hale gelmiştir."
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Yük.Müh. Zeynep ÇELİK",
+        "title": "Sınav Kaygısı ile Başa Çıkma Yolları",
+        "role": "Psikolojik Danışman",
+        "category": "Psikoloji Yazıları",
+        "image": "https://placehold.co/150x150/8e44ad/ffffff?text=Zeynep",
+        "content": [
+            "Hafif düzeyde kaygı motive edicidir, ancak aşırı kaygı performansı düşürür. Peki dengeyi nasıl kuracağız?",
+            "Öncelikle nefes egzersizlerini hayatımıza katmalıyız. Sınav anında 'yapamayacağım' düşüncesi yerine 'elimden geleni yapacağım' düşüncesine odaklanmalıyız.",
+            "Unutmayın, hiçbir sınav sizin değerinizi ölçemez."
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Dr. Ayşe Yılmaz",
+        "title": "Erken Çocuklukta Matematik",
+        "role": "Okul Öncesi Uzmanı",
+        "category": "Eğitim Yazıları",
+        "image": "https://placehold.co/150x150/1abc9c/ffffff?text=Ayse",
+        "content": [
+            "Çocuklar sayıları oyunla öğrenir. Soyut kavramları somutlaştırmak için günlük objeleri kullanın."
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Mehmet Öz",
+        "title": "Geometriyi Sevdirme Yolları",
+        "role": "Geometri Öğretmeni",
+        "category": "Eğitim Yazıları",
+        "image": "https://placehold.co/150x150/f1c40f/ffffff?text=Mehmet",
+        "content": [
+            "Geometri görme sanatıdır. Çevremizdeki şekilleri fark ederek geometriye başlayabiliriz."
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Selin Kara",
+        "title": "YKS Matematik Analizi",
+        "role": "Ölçme Değerlendirme",
+        "category": "Eğitim Yazıları",
+        "image": "https://placehold.co/150x150/e74c3c/ffffff?text=Selin",
+        "content": [
+            "Son 5 yılın sorularını analiz ettiğimizde, problem çözme becerisinin ön plana çıktığını görüyoruz."
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Canan Dağ",
+        "title": "Eğitimde Oyunlaştırma",
+        "role": "Oyun Tasarımcısı",
+        "category": "Eğitim Yazıları",
+        "image": "https://placehold.co/150x150/34495e/ffffff?text=Canan",
+        "content": [
+            "Dersleri oyunlaştırmak, öğrenci motivasyonunu %80 artırır. Basit puanlama sistemleri bile etkilidir."
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Burak Yıl",
+        "title": "Dijital Eğitim Araçları",
+        "role": "Teknoloji Koçu",
+        "category": "Teknoloji Yazıları",
+        "image": "https://placehold.co/150x150/95a5a6/ffffff?text=Burak",
+        "content": [
+            "Tablet ve bilgisayarlar doğru kullanılırsa birer eğitim neferine dönüşür. Yasaklamak yerine yönlendirin."
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Elif Su",
+        "title": "PISA ve Türkiye",
+        "role": "Eğitim Araştırmacısı",
+        "category": "Eğitim Yazıları",
+        "image": "https://placehold.co/150x150/d35400/ffffff?text=Elif",
+        "content": [
+            "Uluslararası sınavlardaki başarımız her geçen yıl artıyor. Ancak okuduğunu anlama konusunda daha çok yolumuz var."
+        ]
+    }
+]

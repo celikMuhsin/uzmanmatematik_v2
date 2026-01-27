@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuvvet Avcısı - Uzman Matematik</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Custom Styles for Kuvvet Avcısı to match React/Tailwind design */
+        :root {
+            --ka-bg-slate-50: #f8fafc;
+            --ka-bg-amber-50: #fffbeb;
+            --ka-text-slate-800: #1e293b;
+            --ka-indigo-600: #4f46e5;
+        }
+
+        .ka-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 3rem;
+            /* p-12 */
+            border-radius: 2rem;
+            /* rounded-[2rem] */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            /* shadow-xl */
+            border: 1px solid #e2e8f0;
+            /* border-slate-200 */
+            min-height: 450px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .ka-title {
+            font-size: 1.875rem;
+            /* text-3xl */
+            font-weight: 900;
+            /* font-black */
+            color: #1e293b;
+            /* text-slate-800 */
+        }
+
+        /* Config View */
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .diff-btn {
+            padding: 1.25rem;
+            /* p-5 */
+            border-radius: 1rem;
+            /* rounded-2xl */
+            border: 4px solid transparent;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Colors based on selection */
+        .diff-btn.easy-selected {
+            border-color: #059669;
+            background: #ecfdf5;
+        }
+
+        .diff-btn.medium-selected {
+            border-color: #d97706;
+            background: #fffbeb;
+        }
+
+        .diff-btn.hard-selected {
+            border-color: #e11d48;
+            background: #fff1f2;
+        }
+
+        .diff-btn.unselected {
+            border-color: #f1f5f9;
+            background: white;
+        }
+
+        .start-btn {
+            width: 100%;
+            background: #4f46e5;
+            /* indigo-600 */
+            color: white;
+            padding: 1.25rem;
+            /* py-5 */
+            border-radius: 1.5rem;
+            /* rounded-[1.5rem] */
+            font-weight: 900;
+            font-size: 1.25rem;
+            /* text-xl */
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-4px);
+            background: #4338ca;
+        }
+
+        /* Playing View */
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-track {
+            width: 12rem;
+            /* w-48 */
+            height: 0.5rem;
+            /* h-2 */
+            background: #f1f5f9;
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4f46e5;
+            transition: width 0.1s linear;
+        }
+
+        .question-box {
+            width: 100%;
+            min-height: 160px;
+            background: #f8fafc;
+            /* slate-50 */
+            border: 1px solid #f1f5f9;
+            border-radius: 2.5rem;
+            /* rounded-[2.5rem] */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            /* text-5xl */
+            font-weight: 900;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .opt-btn {
+            padding: 1.25rem;
+            /* p-5 */
+            border-radius: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 900;
+            border: 4px solid #f1f5f9;
+            background: white;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover {
+            border-color: #4f46e5;
+        }
+
+        /* Keyframes */
+        @keyframes gentle-shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes gentle-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-shake {
+            animation: gentle-shake 0.15s ease-in-out 3;
+        }
+
+        .animate-bounce {
+            animation: gentle-bounce 0.4s ease-in-out 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="https://placehold.co/40x40/transparent/white?text=UM" alt="Logo" class="logo-img">
+                UzmanMatematik
+            </a>
+            <div style="color: white; font-weight: bold;">Kuvvet Avcısı</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Config View -->
+        <div id="config-view" class="ka-container">
+            <div class="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-amber-100 shadow-sm"
+                style="width: 80px; height: 80px; background: #fffbeb; border-radius: 1.5rem; display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; border: 1px solid #fef3c7;">
+                <span style="font-size: 2.5rem;">⚔️</span>
+            </div>
+            <h2 class="ka-title" style="margin-bottom: 2rem;">Zorluk Seçimi</h2>
+
+            <div class="difficulty-grid">
+                <div class="diff-btn unselected" id="btn-easy" onclick="selectDifficulty('easy')">
+                    <div style="font-weight: 900; font-size: 0.75rem; text-transform: uppercase;">KOLAY</div>
+                    <div style="font-size: 10px; color: #64748b; font-weight: 700;">5 Saniye</div>
+                </div>
+                <div class="diff-btn medium-selected" id="btn-medium" onclick="selectDifficulty('medium')">
+                    <div style="font-weight: 900; font-size: 0.75rem; text-transform: uppercase;">ORTA</div>
+                    <div style="font-size: 10px; color: #64748b; font-weight: 700;">3 Saniye</div>
+                </div>
+                <div class="diff-btn unselected" id="btn-hard" onclick="selectDifficulty('hard')">
+                    <div style="font-weight: 900; font-size: 0.75rem; text-transform: uppercase;">ZOR</div>
+                    <div style="font-size: 10px; color: #64748b; font-weight: 700;">2 Saniye</div>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">OYUNA BAŞLA</button>
+        </div>
+
+        <!-- Playing View -->
+        <div id="playing-view" class="ka-container" style="display: none;">
+            <div class="game-header">
+                <div style="text-align: left;">
+                    <span
+                        style="font-size: 10px; font-weight: 900; color: #cbd5e1; display: block; text-transform: uppercase;">Soru</span>
+                    <span id="question-count" style="font-size: 1.125rem; font-weight: 900; color: #1e293b;">1/10</span>
+                </div>
+
+                <div class="progress-track" id="streak-track">
+                    <div class="progress-fill" id="time-bar" style="width: 100%;"></div>
+                </div>
+
+                <div style="text-align: right;">
+                    <span
+                        style="font-size: 10px; font-weight: 900; color: #cbd5e1; display: block; text-transform: uppercase;">Puan</span>
+                    <span id="score-display" style="font-size: 1.125rem; font-weight: 900; color: #4f46e5;">0</span>
+                </div>
+            </div>
+
+            <div id="game-card" class="question-box">
+                <!-- Streak Badge -->
+                <div id="streak-badge"
+                    style="display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #ea580c; color: white; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em;">
+                    <span id="streak-val">0</span>X SERİ!
+                </div>
+
+                <div id="question-text">Loading...</div>
+            </div>
+
+            <div class="options-grid" id="options-container">
+                <!-- Buttons injected by JS -->
+            </div>
+        </div>
+
+        <!-- Result View -->
+        <div id="result-view" class="ka-container" style="display: none; text-align: center;">
+            <div style="font-size: 4rem;">🏆</div>
+            <h2 style="font-size: 3rem; font-weight: 900; color: #1e293b; margin: 1rem 0;">SKOR: <span
+                    id="final-score">0</span></h2>
+            <p
+                style="color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1rem; margin-bottom: 2rem;">
+                KUVVET AVCISI SEVİYESİ TAMAMLANDI!</p>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; width: 100%; margin-bottom: 2rem;">
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 1rem; border: 1px solid #f1f5f9;">
+                    <div style="font-size: 10px; color: #94a3b8; font-weight: 900; text-transform: uppercase;">En İyi
+                        Seri</div>
+                    <div id="final-streak" style="font-size: 1.25rem; font-weight: 900; color: #ea580c;">0</div>
+                </div>
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 1rem; border: 1px solid #f1f5f9;">
+                    <div style="font-size: 10px; color: #94a3b8; font-weight: 900; text-transform: uppercase;">Zorluk
+                    </div>
+                    <div id="final-diff" style="font-size: 1.25rem; font-weight: 900; text-transform: uppercase;">ORTA
+                    </div>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="location.reload()">TEKRAR OYNA</button>
+            <a href="index.html"
+                style="margin-top: 1rem; color: #94a3b8; font-weight: 700; text-decoration: none; display: block;">Çıkış</a>
+        </div>
+
+    </div>
+
+    <script src="assets/js/kuvvet-avcisi.js"></script>
+</body>
+
+</html>

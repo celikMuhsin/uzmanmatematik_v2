@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "image": "https://placehold.co/800x400/2c3e50/ffffff?text=Çarpanlara+Ayırma+Sınavı",
+        "title": "Çarpanlara Ayırma Sınavı Yayında!",
+        "text": "Yeni soru tipleri ve çizim özelliği ile kendini test et.",
+        "action": "showExamPage('carpanlara-ayirma')"
+    },
+    {
+        "id": 2,
+        "image": "https://placehold.co/800x400/e67e22/ffffff?text=Matematik+Hikayeleri",
+        "title": "Matematik Hikayeleri",
+        "text": "Eğlenceli ve öğretici hikayelerle matematiği keşfet.",
+        "action": "showStoryCategory('STORYBOOK')"
+    },
+    {
+        "id": 3,
+        "image": "https://placehold.co/800x400/27ae60/ffffff?text=Yeni+Oyunlar",
+        "title": "Yeni Oyunlar Eklendi!",
+        "text": "Kuvvet Avcısı, Saniye Savaşları ve Denklik Arenası ile eğlenerek öğren.",
+        "action": "showPage('games')"
+    }
+]

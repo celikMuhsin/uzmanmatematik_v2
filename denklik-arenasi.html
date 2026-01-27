@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denklik Arenası - Uzman Matematik</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Denklik Arenası Specific Styles */
+        :root {
+            --da-indigo-600: #4f46e5;
+            --da-slate-50: #f8fafc;
+        }
+
+        .da-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Config View */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .config-box {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .config-label {
+            font-size: 9px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        .opt-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .config-btn {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 900;
+            font-size: 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .config-btn.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        /* Game Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card-btn {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #f1f5f9;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card-btn:hover {
+            border-color: #e2e8f0;
+            transform: scale(1.02);
+        }
+
+        .card-btn.selected {
+            background: #eef2ff;
+            border-color: #6366f1;
+            color: #4338ca;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
+        }
+
+        .card-btn.matched {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0);
+        }
+
+        .card-btn.error {
+            background: #fff1f2;
+            border-color: #f43f5e;
+            color: #e11d48;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            background: #f1f5f9;
+        }
+
+        .stat-label {
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .stat-val {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #1e293b;
+        }
+
+        /* Feedback Toast */
+        .feedback-toast {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 10px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .feedback-toast.show {
+            opacity: 1;
+        }
+
+        .feedback-success {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #d1fae5;
+        }
+
+        .feedback-bonus {
+            background: #f97316;
+            color: white;
+        }
+
+        .feedback-error {
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #ffe4e6;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 800px) {
+            .config-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .header-logo-container {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            .header-logo-icon {
+                font-size: 2rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="https://placehold.co/40x40/transparent/white?text=UM" alt="Logo" class="logo-img">
+                UzmanMatematik
+            </a>
+            <div style="color: white; font-weight: bold;">Denklik Arenası</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Config View -->
+        <div id="config-view" class="da-container"
+            style="align-items: center; justify-content: center; text-align: center;">
+            <div class="w-20 h-20 bg-indigo-600 rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-indigo-100 rotate-6 header-logo-container"
+                style="width: 80px; height: 80px; background: #4f46e5; border-radius: 1.5rem; display: flex; justify-content: center; align-items: center; margin-bottom: 2rem; transform: rotate(6deg);">
+                <span class="header-logo-icon"
+                    style="font-size: 2.5rem; color: white; transform: rotate(-6deg);">🎯</span>
+            </div>
+
+            <h3 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;">Denk Kesirleri Bul!</h3>
+            <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 2rem;">Bütün kartlar açık. En hızlı şekilde
+                eşle, seriyi yakala!</p>
+
+            <div class="config-grid">
+                <div class="config-box">
+                    <span class="config-label">Zorluk Seviyesi</span>
+                    <div class="opt-row">
+                        <button class="config-btn" id="diff-easy" onclick="setDifficulty('easy')">Kolay</button>
+                        <button class="config-btn active" id="diff-medium"
+                            onclick="setDifficulty('medium')">Orta</button>
+                        <button class="config-btn" id="diff-hard" onclick="setDifficulty('hard')">Zor</button>
+                    </div>
+                </div>
+                <div class="config-box">
+                    <span class="config-label">Süre Sınırı</span>
+                    <div class="opt-row" style="grid-template-columns: repeat(4, 1fr);">
+                        <button class="config-btn" id="time-30" onclick="setTime('30')">30s</button>
+                        <button class="config-btn" id="time-60" onclick="setTime('60')">60s</button>
+                        <button class="config-btn active" id="time-90" onclick="setTime('90')">90s</button>
+                        <button class="config-btn" id="time-120" onclick="setTime('120')">120s</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame()"
+                style="background: #4f46e5; color: white; padding: 1rem 3rem; border-radius: 1.5rem; font-weight: 900; font-size: 1.125rem; border: none; cursor: pointer; box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1);">OYUNU
+                BAŞLAT</button>
+        </div>
+
+        <!-- Playing View -->
+        <div id="playing-view" class="da-container" style="display: none;">
+            <div class="stats-bar">
+                <div class="stat-box" style="background: #0f172a;">
+                    <span class="stat-label" style="color: #64748b;">Skor</span>
+                    <div class="stat-val" style="color: white;" id="score-display">0</div>
+                </div>
+                <div class="stat-box" id="streak-box">
+                    <span class="stat-label">Seri</span>
+                    <div class="stat-val" id="streak-display">x0</div>
+                </div>
+                <div class="stat-box" id="timer-box">
+                    <span class="stat-label">Süre</span>
+                    <div class="stat-val" id="timer-display">90s</div>
+                </div>
+            </div>
+
+            <div class="game-grid" id="cards-container">
+                <!-- Cards injected by JS -->
+            </div>
+
+            <div id="feedback-toast" class="feedback-toast">
+                <!-- Message -->
+            </div>
+        </div>
+
+        <!-- Result View -->
+        <div id="result-view" class="da-container"
+            style="display: none; align-items: center; justify-content: center; text-align: center;">
+            <div style="font-size: 4rem; color: #f59e0b; margin-bottom: 1rem;">🏆</div>
+            <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem;">KUTLARIZ!</h2>
+            <p
+                style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #64748b; margin-bottom: 2rem;">
+                Denklik Arenası Tamamlandı</p>
+
+            <div
+                style="background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid #e2e8f0; margin-bottom: 2rem; width: 100%; max-width: 300px;">
+                <div
+                    style="font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.5rem;">
+                    Final Skor</div>
+                <div style="font-size: 3rem; font-weight: 900; color: #4f46e5;" id="final-score">0</div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; width: 100%; max-width: 400px;">
+                <button onclick="startGame()"
+                    style="flex: 1; background: #4f46e5; color: white; padding: 1rem; border-radius: 1.5rem; font-weight: 900; border: none; cursor: pointer;">TEKRAR</button>
+                <button onclick="location.href='index.html'"
+                    style="flex: 1; background: #0f172a; color: white; padding: 1rem; border-radius: 1.5rem; font-weight: 900; border: none; cursor: pointer;">ÇIKIŞ</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="assets/js/denklik-arenasi.js"></script>
+</body>
+
+</html>

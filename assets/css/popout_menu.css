@@ -1,0 +1,43 @@
+/* Sidebar Popout Menu */
+.sidebar-links li {
+    position: relative;
+    /* Ensure absolute children position relative to LI */
+}
+
+/* Level 3 Submenu (Side Popout) */
+.submenu-popout {
+    display: none;
+    position: absolute;
+    left: 100%;
+    /* Push to the right side */
+    top: 0;
+    margin-left: 10px;
+    /* Spacing from parent */
+    background: white;
+    min-width: 180px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    list-style: none;
+    padding: 10px 0;
+    z-index: 1005;
+    /* Above other content */
+    border: 1px solid #eee;
+}
+
+/* Triangle/Arrow adjustment */
+.menu-arrow {
+    transition: transform 0.2s;
+}
+
+/* Mobile: Revert to Accordion */
+@media (max-width: 900px) {
+    .submenu-popout {
+        position: static;
+        /* Stack normally */
+        margin-left: 20px;
+        box-shadow: none;
+        border: none;
+        border-left: 2px solid #eee;
+        width: auto;
+    }
+}
