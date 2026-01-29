@@ -425,7 +425,7 @@ window.Arayuz = {
 
         // Geçici filigran ekle
         const watermark = document.createElement('div');
-        watermark.innerText = 'uzmanmatematik.com ile çözüldü';
+        watermark.innerText = 'xders.com ile çözüldü';
         watermark.style.position = 'absolute';
         watermark.style.bottom = '5px';
         watermark.style.right = '5px';
@@ -450,7 +450,7 @@ window.Arayuz = {
                 now.toTimeString().slice(0, 5).replace(':', '');
 
             const link = document.createElement('a');
-            link.download = `uzmanmatematik-cozum-${dateStr}.png`;
+            link.download = `xders-cozum-${dateStr}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
         }).catch(err => {
