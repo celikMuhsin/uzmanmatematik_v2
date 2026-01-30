@@ -514,7 +514,7 @@ window.Arayuz = {
                         </div>
                     </div>
                     
-                    <div class="header-right">
+                     <div class="header-right">
                          <div class="score-box score-correct" id="correct-box" style="display:none">0</div>
                          <div class="score-box score-wrong" id="wrong-box" style="display:none">0</div>
                          <div class="score-box score-empty" id="empty-box" style="display:none">0</div>
@@ -559,12 +559,670 @@ window.Arayuz = {
         `;
     },
 
+    kapat: function () {
+        // Doğrudan raporu göster
+        this.durdur();
+        this.raporGoster();
+    },
+
+    cikisiOnayla: function () {
+        // Rapordan tam çıkış
+        const container = document.getElementById('math-exam-container');
+        if (container) container.innerHTML = "";
+        this.initialized = false;
+        // Opsiyonel: Ana sayfaya yönlendir veya menüyü aç
+    },
+
+    raporGoster: function () {
+        const container = document.getElementById('math-exam-container');
+        if (!container) return;
+
+        // İstatistikleri Hesapla
+        // gecmisIndex = 0-based index. Length = gecmisIndex + 1 (görülen soru sayısı)
+
+        let toplamSoru = this.gecmisIndex + 1;
+
+        // SON SORU SÜRE KONTROLÜ:
+        // Eğer son soru çözülmediyse VE ekranda 1 dakikadan (60000ms) AZ kaldıysa, 
+        // onu toplam sorudan düş (yani hiç sorulmamış say).
+        if (this.soruBaslamaZamani) {
+            const gecenSure = Date.now() - this.soruBaslamaZamani;
+            const sonSoru = this.soruGecmisi[this.gecmisIndex];
+            // Son soru varsa ve çözülmediyse
+            if (sonSoru && !sonSoru.cozulduMu && gecenSure < 60000) {
+                toplamSoru = Math.max(0, toplamSoru - 1);
+                // console.log("Son soru 1 dakikadan az durduğu için istatistiğe dahil edilmedi.");
+            }
+        }
+
+        // Eğer son soru henüz çözülmediyse onu da "Boş" veya "Görülmedi" sayabiliriz.
+        // Basitlik için gördüğü kadarını raporla.
+
+        // -------------------------------------------------------------
+        // PUANLAMA SİSTEMİ (v3 - Gelişmiş)
+        // -------------------------------------------------------------
+
+        // 1. Temel Veriler
+        const T = toplamSoru > 0 ? toplamSoru : 1; // Bölen sıfır olmasın
+        const birimPuan = 100 / T;
+
+        const dogru = this.dogruSayisi;
+        const yanlis = this.yanlisSayisi;
+        const bos = Math.max(0, toplamSoru - dogru - yanlis);
+        const sureSnTotal = this.timer > 0 ? this.timer : 1;
+
+        // 2. Net Hesabı (4 Yanlış 1 Doğruyu Götürür)
+        const netSayisi = Math.max(0, dogru - (yanlis / 4));
+
+        // 3. Puan Kalemleri
+        // A) Taban Puan (Potansiyel): Sadece doğrular
+        const tabanPuan = Math.round(dogru * birimPuan);
+
+        // B) Net Puanı (Akademik - ANA PUAN): Netler üzerinden
+        const netPuan = Math.round(netSayisi * birimPuan);
+
+        // C) Metrikler
+        // Hız (Dk/Soru)
+        const hızVal = (sureSnTotal / 60) / T;
+
+        // ne_sa (Net/Saat): Saatte yapılan net sayısı
+        // Formül: (Net / Süre(sn)) * 3600
+        const ne_sa = Math.round((netSayisi / sureSnTotal) * 3600);
+
+        // Diğer Metrikler (Ekranda gösterim için)
+        // so_sa (Soru/Saat), do_sa (Doğru/Saat) vb.
+        const speed = Math.round((T / sureSnTotal) * 3600);
+        const dogruHiz = Math.round((dogru / sureSnTotal) * 3600);
+        const yanlisHiz = Math.round((yanlis / sureSnTotal) * 3600);
+        const bosHiz = Math.round((bos / sureSnTotal) * 3600);
+
+        // D) Hız Bonusu (Turbo Puan) - Kriter: ne_sa
+        let hizBonusu = 0;
+        if (ne_sa > 60) hizBonusu = 15;
+        else if (ne_sa > 50) hizBonusu = 10;
+        else if (ne_sa > 40) hizBonusu = 5;
+
+        // Eğer hiç net yoksa hız bonusu verme (Sallamayı önle)
+        if (netSayisi <= 0) hizBonusu = 0;
+
+        // E) SKERA Etkisi
+        let skeraPuan = 0;
+
+        // -------------------------------------------------------------
+        // PERFORMANS ANALİZİ (V2.1) - FİZİKSEL VERİMLİLİK
+        // -------------------------------------------------------------
+
+        // 1. Hesaplamalar
+        // V_net (Net Hız): (Net / Saniye) * 3600
+        const v_net = Math.max(0, Math.round((netSayisi / sureSnTotal) * 3600));
+
+        // V_ham (Ham Hız): (Toplam Soru / Saniye) * 3600 -> "speed" değişkeni zaten bu
+        const v_ham = speed;
+
+        // Verimlilik Skoru: (V_net / V_ham) * 100
+        // Sıfıra bölünme hatası olmasın
+        const verimlilik = v_ham > 0 ? Math.min(100, Math.max(0, Math.round((v_net / v_ham) * 100))) : 0;
+
+        // Kaçış Oranı: Boş / Toplam Soru
+        const kacis_orani = T > 0 ? (bos / T) : 0;
+
+        // 2. 10 Basamaklı Performans Karar Ağacı
+        let perfBaslik = "";
+        let perfMesaj = "";
+        let perfSeviye = 0; // 1-10
+
+        // BÖLÜM 1: KRİTİK BÖLGE (%0 - %29)
+        if (verimlilik < 30) {
+            // SEVİYE 1: %0 - %9 (Etkisiz Eleman)
+            if (verimlilik < 10) {
+                perfSeviye = 1;
+                if (kacis_orani > 0.80) {
+                    perfBaslik = "HAYALET MODU 👻";
+                    perfMesaj = "Sadece 'İleri' tuşuna basıyorsun. Soruların %80'inden fazlasını boş geçerek elde ettiğin bu hızın hiçbir değeri yok. Bu bir yarış değil, öğrenme süreci.";
+                } else {
+                    perfBaslik = "ENERJİ İSRAFI ⚠️";
+                    perfMesaj = "Çok fazla yanlışın var. Yaptığın her 10 işlemden 9'u boşa gidiyor. Hızlanmayı tamamen bırak ve konu çalış.";
+                }
+            }
+            // SEVİYE 2: %10 - %19 (Karavana)
+            else if (verimlilik < 20) {
+                perfSeviye = 2;
+                if (kacis_orani > 0.60) {
+                    perfBaslik = "SEÇİCİ GEÇİRGEN";
+                    perfMesaj = "Çok fazla soruyu pas geçiyorsun. Sadece çok kolay gelenleri çözüp diğerlerine bakmıyorsun. Bu stratejiyle netlerin artmaz.";
+                } else {
+                    perfBaslik = "ODAK SORUNU";
+                    perfMesaj = "Hızın var ama isabetin yok. Attığın taş ürküttüğün kurbağaya değmiyor. Verimin %20'nin altında.";
+                }
+            }
+            // SEVİYE 3: %20 - %29 (Verimsiz Çaba)
+            else {
+                perfSeviye = 3;
+                perfBaslik = "PATİNAJ ÇEKİYOR";
+                perfMesaj = "Motor bağırıyor ama araba gitmiyor. Çok efor harcıyorsun ama bu puana dönüşmüyor. Yanlışlarını analiz etmeden yeni soruya geçme.";
+            }
+        }
+        // BÖLÜM 2: GELİŞİM BÖLGESİ (%30 - %59)
+        else if (verimlilik < 60) {
+            // SEVİYE 4: %30 - %39 (Acemi Sürücü)
+            if (verimlilik < 40) {
+                perfSeviye = 4;
+                perfBaslik = "ZORLANIYOR";
+                perfMesaj = "Harcadığın eforun sadece üçte biri puana dönüşüyor. Konu eksiklerin hızını baltalıyor.";
+            }
+            // SEVİYE 5: %40 - %49 (Ortalamanın Altı)
+            else if (verimlilik < 50) {
+                perfSeviye = 5;
+                perfBaslik = "TOPARLANMA SÜRECİ";
+                perfMesaj = "Yarı yarıya bir başarı. Hızın fena değil ama dikkatsizlik yüzünden potansiyelinin yarısını çöpe atıyorsun.";
+            }
+            // SEVİYE 6: %50 - %59 (Kırılma Noktası)
+            else {
+                perfSeviye = 6;
+                perfBaslik = "YARI YARIYA";
+                perfMesaj = "Kritik eşiktesin. Biraz daha dikkatle verimliliğini pozitif tarafa taşıyabilirsin. Yanlış sayını azaltmaya odaklan.";
+            }
+        }
+        // BÖLÜM 3: PERFORMANS BÖLGESİ (%60 - %89)
+        else if (verimlilik < 90) {
+            // SEVİYE 7: %60 - %69 (Vites Yükseliyor)
+            if (verimlilik < 70) {
+                perfSeviye = 7;
+                perfBaslik = "İVMELENME";
+                perfMesaj = "Güzel. Harcadığın eforun çoğu artık nete dönüşüyor. Hızını koruyarak isabet oranını artırabilirsin.";
+            }
+            // SEVİYE 8: %70 - %79 (Verimli Çalışma)
+            else if (verimlilik < 80) {
+                perfSeviye = 8;
+                perfBaslik = "ETKİLİ TEMPO";
+                perfMesaj = "Gayet sağlıklı bir istatistik. Soruları bilinçli çözüyorsun. Küçük hataları da temizlersen harika olacak.";
+            }
+            // SEVİYE 9: %80 - %89 (Yüksek Performans)
+            else {
+                perfSeviye = 9;
+                perfBaslik = "USTALAŞIYOR";
+                perfMesaj = "Çok iyi! Boşa giden enerjin çok az. Hem hızlısın hem de isabetlisin. Sınav kondisyonun harika.";
+            }
+        }
+        // BÖLÜM 4: ZİRVE (%90 - %100)
+        else {
+            // SEVİYE 10: %90 - %100 (Prime Dönemi)
+            perfSeviye = 10;
+            perfBaslik = "MAKİNE 🤖";
+            perfMesaj = "İnanılmaz! Neredeyse hiç enerji kaybın yok. Her hamlen puana dönüşüyor. Bu verimlilikle çözemeyeceğin sınav yok.";
+        }
+
+        // Basit Başarı Mesajları (Eski kod uyumu için)
+        // const basariOrani = (dogru / T) * 100; (Yukarıda hesaplandı)
+        let basariMesaj = "Daha fazla pratik yapmalısın.";
+        let basariEmoji = "💪";
+        let analizMetni = "Konu eksiklerini tamamlayarak tekrar denemeni öneririm.";
+
+
+        // SKERA (Stratejik Karar Eğilimi ve Risk Analizi)
+        // -------------------------------------------------------------
+
+        // 1. Hesaplama Mantığı (Algoritma)
+        const so = toplamSoru; // Toplam Soru
+        const hata_orani = so > 0 ? (1 - (dogru / so)) : 0;
+        const yapilamayan = yanlis + bos;
+
+        // Dürtüsellik İndeksi (Impulsivity Index - I_imp)
+        const i_imp = yapilamayan > 0 ? (yanlis / yapilamayan) * hata_orani : 0;
+
+        // Çekimserlik İndeksi (Timidity Index - I_timid)
+        const i_timid = yapilamayan > 0 ? (bos / yapilamayan) * hata_orani : 0;
+
+        // 2. Karar Ağacı (Logic Flow)
+        let skeraBaslik = "";
+        let skeraDetay = "";
+
+        // HIZ KONTROL KATMANI (İLK FİLTRE)
+        // -------------------------------------------------------------
+        // Eşik Değer: 20 so/sa
+        if (speed < 20) {
+            // DURUM 0: RÖLANTİ / AĞIR VASITA (Low Velocity Mode)
+            if (hata_orani < 0.10) {
+                // Alt Durum A (Doğru yapıyor ama yavaş)
+                skeraBaslik = "AŞIRI YAVAŞSIN";
+                skeraPuan = -5;
+                skeraDetay = "Soruları doğru çözüyorsun ama hızın bir sınav temposunun çok altında (Kaplumbağa Modu). Bir soru üzerinde bu kadar vakit harcamak seni yetiştirememe riskine sokar. Biraz hızlanmayı dene.";
+            } else {
+                // Alt Durum B (Hem yavaş hem yanlış)
+                skeraBaslik = "ODAKLANMA SORUNU";
+                skeraPuan = -5;
+                skeraDetay = "Hem hızın çok düşük hem de hata yapıyorsun. Bu durum, konuyu anlamakta güçlük çektiğini veya dikkatinin tamamen dağıldığını gösteriyor.";
+            }
+        }
+        else {
+            // STANDART ANALİZ KATMANI (Hız > 20)
+            // -------------------------------------------------------------
+
+            // DURUM 1: MASTER SEVİYE (Sniper Mode)
+            // Şart: Hata yoksa veya çok azsa VE Hız > 40
+            if (hata_orani < 0.05 && speed > 40) {
+                skeraBaslik = "KESKİN NİŞANCI";
+                skeraPuan = 10;
+                skeraDetay = "Mükemmel kombinasyon! Hem çok hızlısın hem de hatasız ilerliyorsun. Gerçek bir sınav performansı budur.";
+            }
+            // DURUM 2: DÜRTÜSEL / RİSKLİ (Gambler Mode)
+            else if (i_imp > 0.30) {
+                // Eski mesajlar korunuyor
+                if (i_imp <= 0.50) {
+                    skeraBaslik = "Hafif Riskli Davranış";
+                    skeraPuan = -5;
+                    skeraDetay = "Hızını seviyoruz ama bazı sorularda acele edip işlem hatası yapıyorsun. Emin olmadığında durup düşünmek, yanlış yapmaktan daha iyidir.";
+                } else if (i_imp <= 0.75) {
+                    skeraBaslik = "Ciddi Riskli Davranış";
+                    skeraPuan = -10;
+                    skeraDetay = "Dikkat! Yanlışların doğrularını götürmeye başladı. Bilmediğin soruyu boş bırakmak bir stratejidir. Her şıkkı işaretlemek zorunda değilsin, fren yap!";
+                } else {
+                    skeraBaslik = "Kumarbaz Modu (Rastgele)";
+                    skeraPuan = -10;
+                    skeraDetay = "Analizler, soruları okumadan veya rastgele işaretlediğini gösteriyor. Bu bir sayısal loto değil. Lütfen sadece çözümünden emin olduğun soruları işaretle.";
+                }
+            }
+            // DURUM 3: ÇEKİMSER / PASİF (Timid Mode)
+            else if (i_timid > 0.40) {
+                if (i_timid <= 0.60) {
+                    skeraBaslik = "Temkinli Yaklaşım";
+                    skeraPuan = 0;
+                    skeraDetay = "Biraz fazla garantici oynuyorsun. Kalemin ucunu kağıda değdirmekten korkma. Yanlış yapsan bile doğrusunu öğrenirsin. Biraz daha atak olmalısın.";
+                } else if (i_timid <= 0.80) {
+                    skeraBaslik = "Aşırı Çekimser";
+                    skeraPuan = -5;
+                    skeraDetay = "Çok fazla soruyu pas geçiyorsun. Bu kadar boş bırakmak, konuyu bilmediğini veya kendine güvenmediğini gösterir. En azından işlem yapmayı dene.";
+                } else {
+                    skeraBaslik = "Donmuş / Pasif";
+                    skeraPuan = -5;
+                    skeraDetay = "Sistemi sadece izliyor gibisin. Neredeyse hiçbir soruya müdahale etmemişsin. Hata yapmaktan bu kadar korkma, öğrenmenin ilk adımı denemektir.";
+                }
+            }
+            // DURUM 4: DENGELİ GELİŞİM (Balanced)
+            else {
+                if (hata_orani < 0.15) {
+                    skeraBaslik = "Umut Vaat Ediyor";
+                    skeraPuan = 5;
+                    skeraDetay = "Dengen çok iyi. Hem hızın yerinde hem de risk almıyorsun. Doğru sayını artırmak için konu tekrarlarına ağırlık ver.";
+                } else if (hata_orani < 0.30) {
+                    skeraBaslik = "Çalışması Gerek";
+                    skeraPuan = 0;
+                    skeraDetay = "Kötü değil ama daha yolumuz var. Yanlış ve boşların dengeli dağılmış. Bu, konu eksikliğine işaret ediyor. Konu anlatımına dönmelisin.";
+                } else {
+                    skeraBaslik = "Kritik Bölge";
+                    skeraPuan = 0;
+                    skeraDetay = "Zorlanıyorsun. Stratejik bir hatan yok (sallamıyorsun) ama bilgi eksiğin fazla. Test çözmeyi bırakıp konuyu baştan çalışmanı öneririm.";
+                }
+            }
+        }
+
+        // -------------------------------------------------------------
+        // KONDİSYON ANALİZİ (v3.0) - DİNAMİK TREND VE GRAFİK
+        // -------------------------------------------------------------
+
+        // 1. Veri Segmentasyonu (5 Eşit Parça)
+        const segmentCount = 5;
+        const segmentSize = Math.ceil(toplamSoru / segmentCount);
+        const segmentData = [];
+
+        // Soruları zaman damgasına göre sırala (Garanti olsun)
+        const sortedHistory = [...this.soruGecmisi].sort((a, b) => (a.cozumSaniyesi || 999999) - (b.cozumSaniyesi || 999999));
+
+        let prevTime = 0;
+        for (let i = 0; i < segmentCount; i++) {
+            const startIdx = i * segmentSize;
+            const endIdx = Math.min((i + 1) * segmentSize, toplamSoru);
+            const segmentQuestions = sortedHistory.slice(startIdx, endIdx);
+
+            // Segment Metrikleri
+            if (segmentQuestions.length === 0) {
+                segmentData.push({ netHiz: 0, dogruluk: 0, bosOrani: 0 });
+                continue;
+            }
+
+            let sDogru = 0, sYanlis = 0, sBos = 0;
+            let lastTime = prevTime;
+
+            segmentQuestions.forEach(q => {
+                // Eğer cevaplanmamışsa (cozumSaniyesi yoksa) boş sayılır
+                if (q.cozumSaniyesi) {
+                    lastTime = q.cozumSaniyesi;
+                    // Cevap kontrolü (siklar üzerinden)
+                    if (q.cozulduMu) {
+                        const secilen = q.siklar[q.secilenSikIndex];
+                        if (secilen.dogruMu) sDogru++;
+                        else sYanlis++;
+                    } else {
+                        sBos++;
+                    }
+                } else {
+                    // İşaretlenmeden geçilenler
+                    sBos++;
+                }
+            });
+
+            // Segment Süresi (Saniye)
+            // Eğer segmentte hiç zaman damgası yoksa (full boş), tahmini süre ver (ortlama)
+            let sDuration = Math.max(1, lastTime - prevTime);
+            if (sDuration === 1 && segmentQuestions.length > 0) sDuration = 10 * segmentQuestions.length; // Fallback
+
+            prevTime = lastTime;
+
+            const sNet = Math.max(0, sDogru - (sYanlis / 4));
+            const sNetHiz = Math.round((sNet / sDuration) * 3600); // Net/Saat
+            const sTotal = sDogru + sYanlis + sBos;
+            const sDogruluk = sTotal > 0 ? (sDogru / sTotal) * 100 : 0;
+            const sBosOrani = sTotal > 0 ? (sBos / sTotal) : 0;
+
+            segmentData.push({
+                netHiz: sNetHiz,
+                dogruluk: Math.round(sDogruluk),
+                bosOrani: sBosOrani
+            });
+        }
+
+        // 2. Dinamik Trend Analizi (10 Senaryo)
+        // Varsayılan
+        let kondisyonBaslik = "NORMAL SEYİR";
+        let kondisyonMesaj = "Dengeli bir sınav geçirdin. Belirgin bir kopuş veya patlama yok.";
+        let kondisyonTavsiye = "Bu tempoyu koruyarak doğruluğunu artırmaya odaklan.";
+
+        // Verileri Hazırla
+        const v = segmentData.map(d => d.netHiz);
+        const d = segmentData.map(d => d.dogruluk);
+        const b = segmentData.map(d => d.bosOrani);
+
+        // Yardımcı Fonksiyonlar
+        const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+
+        // SENARYO KONTROLLERİ (Öncelik Sırasıyla)
+
+        // (6) PES EDEN: Son 2 parçada boş oranı %90+
+        if (b[3] > 0.9 && b[4] > 0.9) {
+            kondisyonBaslik = "PES EDEN (The Quitter) 🏳️";
+            kondisyonMesaj = "Sınavı kafanda erken bitirmişsin. Sonlara doğru kalemi bırakıp sadece izlemişsin.";
+            kondisyonTavsiye = "Mücadeleyi son saniyeye kadar bırakma. Bir soru bile sıralamanı değiştirir.";
+        }
+        // (2) KONDİSYON ÇÖKÜŞÜ: İlk 2 yüksek, Son 2 %40+ düşüş
+        else if (avg([v[0], v[1]]) > 40 && avg([v[3], v[4]]) < avg([v[0], v[1]]) * 0.6) {
+            kondisyonBaslik = "KONDİSYON ÇÖKÜŞÜ 📉";
+            kondisyonMesaj = "Sınava harika başladın ama 3. çeyrekten sonra pilin bitti. Sorun bilgi değil, zihinsel dayanıklılık.";
+            kondisyonTavsiye = "Uzun süreli odaklanma antrenmanları yapmalısın. Pomodoro tekniği işe yarayabilir.";
+        }
+        // (5) SAMAN ALEVİ: 1. parça mükemmel, gerisi çöküş
+        else if (v[0] > 50 && d[0] > 70 && v[1] < 20) {
+            kondisyonBaslik = "SAMAN ALEVİ 🔥";
+            kondisyonMesaj = "Çok hızlı ve hevesli başladın ama enerjini ilk dakikalarda tükettin. Maratonu sprint gibi koşamazsın.";
+            kondisyonTavsiye = "Heyecanını kontrol et. Enerjini tüm sınava yaymayı öğrenmelisin.";
+        }
+        // (4) PANİK ATAK: Ortada Hız Artıyor, Doğruluk Çakılıyor (Ters Orantı)
+        // Segment 2 veya 3'te: Hız > (Ort*1.5) VE Doğruluk < 50
+        else if ((v[2] > avg(v) * 1.5 && d[2] < 50) || (v[3] > avg(v) * 1.5 && d[3] < 50)) {
+            kondisyonBaslik = "PANİK ATAK ⚠️";
+            kondisyonMesaj = "Dikkat! Sınavın ortasında bir kriz yaşamışsın. Muhtemelen zor bir soru seni paniğe sürükledi.";
+            kondisyonTavsiye = "Kriz anında 'turlama taktiği'ni kullan. Yapamadığın soruyla inatlaşma, geç.";
+        }
+        // (7) SON DAKİKA GOLCÜSÜ: Son parça hızı çok yüksek
+        else if (v[4] > avg(v.slice(0, 4)) * 3 && v[4] > 40) {
+            kondisyonBaslik = "SON DAKİKA GOLCÜSÜ ⚽";
+            kondisyonMesaj = "Süreyi iyi yönetemedin. Son kısımda 'ne kurtarırsam kardır' diyerek saldırmışsın.";
+            kondisyonTavsiye = "Zaman yönetimine çalış. Her soruya eşit süre ayırmaya gayret et.";
+        }
+        // (3) DİZEL MOTOR: İlk parça düşük, sonra artıyor
+        else if (v[0] < 20 && v[1] > v[0] && v[2] > v[1]) {
+            kondisyonBaslik = "DİZEL MOTOR 🚜";
+            kondisyonMesaj = "Isınman zaman alıyor. Sınavın başında tutuksun, sonradan açılıyorsun.";
+            kondisyonTavsiye = "Sınav öncesi zihinsel ısınma egzersizleri veya 3-5 tane kolay işlem sorusu çöz.";
+        }
+        // (10) NİNJA: Düşük başla, hatasız hızlan
+        else if (v[0] < 40 && v[4] > v[0] && avg(d) > 90) {
+            kondisyonBaslik = "NİNJA 🥷";
+            kondisyonMesaj = "Sessiz ve derinden. Önce ortamı kokladın, sonra avlamaya başladın. mükemmel strateji.";
+            kondisyonTavsiye = "Bu stratejiyi koru. Sadece hızını biraz daha erkene çekebilirsin.";
+        }
+        // (1) İSTİKRARLI MAKİNE: Sapma az
+        else if (Math.max(...v) - Math.min(...v) < 15 && avg(v) > 40) {
+            kondisyonBaslik = "İSTİKRARLI MAKİNE 🤖";
+            kondisyonMesaj = "Robot gibisin! Başladığın tempoda bitirdin. Muazzam bir kondisyon.";
+            kondisyonTavsiye = "Artık sadece hız sınırlarını zorlamaya odaklanabilirsin.";
+        }
+        // (9) UYURGEZER: Hepsi düşük
+        else if (Math.max(...v) < 20 && avg(d) < 50) {
+            kondisyonBaslik = "UYURGEZER 🧟";
+            kondisyonMesaj = "Sınav boyunca uyanamamışsın. Zihnin burada değildi.";
+            kondisyonTavsiye = "Uykunu ve enerjini kontrol et. Sınava daha dinç girmelisin.";
+        }
+        // (8) HIZ TRENİ: Zikzak
+        else if (Math.abs(v[1] - v[0]) > 20 && Math.abs(v[2] - v[1]) > 20) {
+            kondisyonBaslik = "HIZ TRENİ 🎢";
+            kondisyonMesaj = "Odaklanma sorunu yaşıyorsun. Bir dalıp bir çıkıyorsun. Konsantrasyonunu bir çizgiye oturtmalısın.";
+            kondisyonTavsiye = "Dikkatin dağıldığında derin bir nefes al ve sıfırla.";
+        }
+
+        // -------------------------------------------------------------
+        // TOPLAM PUAN HESAPLAMA (Final Score)
+        // -------------------------------------------------------------
+        // skeraPuan undefined ise 0 al
+        const sPuan = typeof skeraPuan !== 'undefined' ? skeraPuan : 0;
+        const toplamSkor = Math.max(0, netPuan + hizBonusu + sPuan);
+
+        // Renklendirme Sınıfları
+        const puanColor = toplamSkor >= 80 ? "#16a34a" : (toplamSkor >= 50 ? "#ca8a04" : "#dc2626");
+
+        // UI Renkleri (Performans İçin)
+        let perfColor = "#dc2626";
+        if (perfSeviye >= 8) perfColor = "#16a34a"; //şil
+        else if (perfSeviye >= 6) perfColor = "#1d4ed8"; // Mavi
+        else if (perfSeviye >= 4) perfColor = "#ca8a04"; // Turuncu
+
+        // SKERA Bar Hesabı (Kabaca -10 ile +10 arası, 0-100'e maple)
+        const skeraYuzde = Math.min(100, Math.max(0, ((sPuan + 10) / 20) * 100));
+        let skeraRenk = "#2563eb"; // Mavi ton
+        if (sPuan < 0) skeraRenk = "#dc2626"; // Negatifse kırmızı
+        else if (sPuan > 5) skeraRenk = "#16a34a"; // Çok iyiyse yeşil
+
+        const raporHTML = `
+            <div class="exam-card" style="text-align: left; padding: 0;">
+                <div class="exam-header">
+                    <div style="font-weight: bold; font-size: 1rem;">SINAV SONUÇ RAPORU</div>
+                     <button id="btn-close" onclick="Arayuz.yenidenBaslat()" class="close-btn" title="Kapat">✕</button>
+                </div>
+
+                <div style="padding: 20px; overflow-y: auto; max-height: 75vh;">
+                     
+                     <!-- ÖZET PUAN BLOĞU (Renkli) -->
+                     <div style="margin-bottom: 20px; text-align: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px;">
+                        <div style="font-size: 0.9rem; color: #6b7280; margin-bottom: 5px;">TOPLAM PUAN</div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: ${puanColor}; line-height: 1;">${toplamSkor}</div>
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 5px;">(Maksimum 100 Puan)</div>
+                        
+                        <!-- PUAN DETAYLARI (Geri Geldi) -->
+                        <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px; font-size: 0.8rem;">
+                             <div style="background: #f9fafb; padding: 4px 8px; border-radius: 6px; border: 1px solid #e5e7eb; color: #4b5563;">
+                                Net Puan: <strong>${netPuan}</strong>
+                             </div>
+                             <div style="background: #eff6ff; padding: 4px 8px; border-radius: 6px; border: 1px solid #dbeafe; color: #1d4ed8;">
+                                Hız: <strong>+${hizBonusu}</strong>
+                             </div>
+                             <div style="background: ${sPuan >= 0 ? '#f0fdf4' : '#fef2f2'}; padding: 4px 8px; border-radius: 6px; border: 1px solid ${sPuan >= 0 ? '#bbf7d0' : '#fecaca'}; color: ${sPuan >= 0 ? '#15803d' : '#b91c1c'};">
+                                SKERA: <strong>${sPuan >= 0 ? '+' + sPuan : sPuan}</strong>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- DETAYLI İSTATİSTİKLER (Kart - Beyaz) -->
+                    <div style="margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; background: #ffffff;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 0.85rem; font-weight: bold; color: #374151; border-bottom: 1px solid #f3f4f6; padding-bottom: 4px;">Detaylı İstatistikler</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.7rem; color: #4b5563;">
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.7rem;">
+                                <span style="font-size: 0.7rem;">Doğru / Yanlış / Boş / Net:</span> 
+                                <span style="font-size: 0.7rem;">
+                                    <strong style="color: #16a34a;">${dogru}</strong> / 
+                                    <strong style="color: #dc2626;">${yanlis}</strong> / 
+                                    <strong style="color: #9ca3af;">${bos}</strong> / 
+                                    <strong style="color: #2563eb;">${netSayisi.toFixed(2)}</strong>
+                                </span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.7rem;"><span style="font-size: 0.7rem;">Süre:</span> <strong style="font-size: 0.7rem;">${Math.floor(sureSnTotal / 60)} dk ${sureSnTotal % 60} sn</strong></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.7rem;"><span style="font-size: 0.7rem;">Soru Hızı:</span> <strong style="font-size: 0.7rem;">${speed} soru/sa</strong></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.7rem;"><span style="font-size: 0.7rem;">Net Hızı:</span> <strong style="font-size: 0.7rem;">${ne_sa} net/sa</strong></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- PERFORMANS ANALİZİ (Kart - Krem) -->
+                    <div style="margin-bottom: 15px; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; background: #fffbeb;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; font-weight: bold; color: #d97706; display: flex; justify-content: space-between;">
+                            <span>Performans Analizi (Fiziksel)</span>
+                            <span style="background: ${perfColor}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">Seviye ${perfSeviye}/10</span>
+                        </h4>
+                        <div style="font-size: 0.95rem; font-weight: 700; color: #1f2937; margin-bottom: 3px;">${perfBaslik}</div>
+                        <p style="margin: 0; font-size: 0.85rem; color: #4b5563; line-height: 1.4;">${perfMesaj}</p>
+                        
+                        <div style="margin-top: 8px; background: rgba(0,0,0,0.05); height: 6px; border-radius: 3px; overflow: hidden;">
+                             <div style="width: ${verimlilik}%; background: ${perfColor}; height: 100%;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #6b7280; margin-top: 3px;">
+                            <span>Verimlilik: %${verimlilik}</span>
+                            <span>Kaçış: %${(kacis_orani * 100).toFixed(0)}</span>
+                        </div>
+                    </div>
+
+                    <!-- SKERA ANALİZİ (Kart - Mavi) -->
+                    <div style="margin-bottom: 15px; border: 1px solid #dbeafe; border-radius: 8px; padding: 12px; background: #eff6ff;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; font-weight: bold; color: #1e40af; display: flex; justify-content: space-between;">
+                            <span>SKERA Analizi (Zihinsel)</span>
+                             <span style="background: ${skeraRenk}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">Puan: ${sPuan > 0 ? '+' + sPuan : sPuan}</span>
+                        </h4>
+                        <div style="font-size: 0.95rem; font-weight: 700; color: #1e3a8a; margin-bottom: 3px;">${skeraBaslik}</div>
+                        <p style="margin: 0; font-size: 0.85rem; color: #1e3a8a; line-height: 1.4; opacity: 0.8;">${skeraDetay}</p>
+
+                        <div style="margin-top: 8px; background: rgba(255,255,255,0.5); height: 6px; border-radius: 3px; overflow: hidden;">
+                             <div style="width: ${skeraYuzde}%; background: ${skeraRenk}; height: 100%;"></div>
+                        </div>
+                         <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #60a5fa; margin-top: 3px;">
+                            <span>Stratejik Kontrol: %${Math.round(skeraYuzde)}</span>
+                        </div>
+                    </div>
+
+                     <!-- KONDİSYON ANALİZİ (Kart - Mor) -->
+                    <div style="margin-top: 15px; border: 1px solid #ede9fe; border-radius: 8px; padding: 12px; background: #f5f3ff;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; font-weight: bold; color: #7c3aed;">Kondisyon Analizi (Zaman): <span style="color: #4c1d95;">${kondisyonBaslik}</span></h4>
+                        <p style="margin: 0 0 15px 0; font-size: 0.85rem; color: #5b21b6; line-height: 1.4;">
+                            ${kondisyonMesaj}<br>
+                            <strong style="color: #7c3aed;">💡 Tavsiye:</strong> ${kondisyonTavsiye}
+                        </p>
+                        <div style="position: relative; height: 180px; width: 100%;">
+                            <canvas id="kondisyonChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+                 
+                <!-- BUTONLAR (Footer) -->
+                <div class="control-panel" style="margin-top: auto; display: flex; gap: 8px; padding: 15px; border-top: 1px solid #f3f4f6; background: white;">
+                    <button onclick="Arayuz.yenidenBaslat()" class="btn-action btn-secondary" style="flex: 1; font-size: 0.85rem;">🔄 TEKRAR ÇÖZ</button>
+                    <button onclick="window.print()" class="btn-action btn-secondary" style="flex: 0.8; font-size: 0.85rem;">🖨️ YAZDIR</button>
+                    <button onclick="Arayuz.raporuPaylas()" class="btn-action btn-primary" style="flex: 1.2; font-size: 0.85rem;">📤 PAYLAŞ</button>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = raporHTML;
+
+        // GRAFİK ÇİZİMİ (Chart.js)
+        setTimeout(() => {
+            const ctx = document.getElementById('kondisyonChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['%0-20', '%20-40', '%40-60', '%60-80', '%80-100'],
+                        datasets: [
+                            {
+                                label: 'Net Hız (ne/sa)',
+                                data: v,
+                                borderColor: '#7c3aed',
+                                backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                                tension: 0.4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Doğruluk (%)',
+                                data: d,
+                                borderColor: '#10b981',
+                                borderDash: [5, 5],
+                                tension: 0.4,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 10, font: { size: 10 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'Hız' },
+                                min: 0
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: 'Doğruluk %' },
+                                min: 0,
+                                max: 100,
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        }, 100);
+    },
+
+    // YENİ: Rapor ekranından çıkıp testi yeniden başlatmak için
+    yenidenBaslat: function () {
+        this.initialized = false; // UI'ın tekrar çizilmesi için false yap
+        this.acilis(); // Baştan başlat
+    },
+
     sifirlaVeBaslat: function () {
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.timer = 0;
 
+        // UI Elementlerini Bul veya Yeniden Oluştur (Eğer rapordan geliyorsak elem'ler yok olmuştur)
         const tEl = document.getElementById('exam-timer');
-        if (tEl) tEl.innerText = "00:00";
+        if (!tEl) {
+            // Eğer timer elementi yoksa (ki rapor ekranındaysak yoktur), 
+            // acilis() fonksiyonu zaten getHtmlTemplate() ile bunları oluşturmalı.
+            // Ancak initialized true ise oluşturmaz. O yüzden initialized=false yaparak çağrılmalı.
+            console.warn("Elementler bulunamadı, yeniden başlatılıyor...");
+            this.initialized = false;
+            this.acilis();
+            return;
+        }
+
+        tEl.innerText = "00:00";
+        // ... (Diğer sıfırlamalar devam eder)
+
 
         const sEl = document.getElementById('exam-speed');
         if (sEl) {
@@ -715,6 +1373,10 @@ window.Arayuz = {
 
     renderSoru: function (soruData) {
         const alan = document.getElementById('soru-alani');
+
+        // ZAMAN TAKİBİ: Sorunun ne zaman görüntülendiğini kaydet
+        this.soruBaslamaZamani = Date.now();
+
         const ipucuKutu = document.getElementById('ipucu-metni');
         if (ipucuKutu) ipucuKutu.style.display = 'none';
 
@@ -784,6 +1446,7 @@ window.Arayuz = {
         const guncelSoru = this.soruGecmisi[this.gecmisIndex];
         if (guncelSoru.cozulduMu) return;
 
+        guncelSoru.cozumSaniyesi = this.timer; // Kondisyon Analizi için zaman damgası
         guncelSoru.cozulduMu = true;
         guncelSoru.secilenSikIndex = index;
 
@@ -1125,6 +1788,35 @@ window.Arayuz = {
             }
         `;
         document.head.appendChild(style);
+    },
+
+    raporuPaylas: function () {
+        // Rapor kartını seç
+        const raporElement = document.querySelector('.exam-card');
+        if (!raporElement) return;
+
+        // html2canvas ile görüntü al
+        html2canvas(raporElement).then(canvas => {
+            canvas.toBlob(blob => {
+                const file = new File([blob], "sinav_sonuc_raporu.png", { type: "image/png" });
+
+                // Web Share API Desteği (Mobil vs)
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Sınav Sonucum',
+                        text: 'XDERS Uzman Matematik sınav sonucum! Sen de dene!',
+                        files: [file]
+                    }).catch(err => console.log('Paylaşım iptal:', err));
+                } else {
+                    // Masaüstü Fallback: İndirme
+                    const link = document.createElement('a');
+                    link.download = 'sinav_sonuc_raporu.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                    alert("Görüntü indirildi (Tarayıcın direkt paylaşımı desteklemiyor).");
+                }
+            });
+        });
     }
 };
 

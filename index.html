@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="assets/css/columnists.css">
     <link rel="stylesheet" href="assets/css/contact.css">
     <link rel="stylesheet" href="assets/css/quiz.css"> <!-- New Quiz CSS -->
+    <link rel="stylesheet" href="assets/css/report.css"> <!-- New Report CSS -->
     <link rel="stylesheet" href="assets/css/edebiyat.css">
     <link rel="stylesheet" href="assets/css/saniye.css">
     <link rel="stylesheet" href="assets/css/kuvvet.css">
@@ -71,6 +72,8 @@
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>➗</text></svg>">
 </head>
@@ -263,7 +266,24 @@
                                 Kalkanı</a></li>
                     </ul>
                 </li>
-                <li><a href="#" onclick="alert('Skor Tablosu yakında eklenecek!'); return false;">🏆 Skor Tablosu</a>
+                <li>
+                    <a href="#" onclick="toggleSubMenu(event, 'score-dropdown')"
+                        class="flex items-center justify-between" style="display: flex;">
+                        <span>🏆 Skor Tablosu</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-4 h-4 opacity-70 transform transition-transform duration-200" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </a>
+                    <ul id="score-dropdown" style="display: none; list-style: none; padding-left: 0;">
+                        <li style="padding-left: 20px;">
+                            <a href="#" onclick="showPage('quiz')"
+                                style="padding: 5px 0; display: block; font-size: 0.9em;">
+                                › Genel Deneme Sınavı (Eski)
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li><a href="#" onclick="alert('Duyurular yakında eklenecek!'); return false;">📢 Duyurular</a></li>
                 <li><a href="#" onclick="showPage('contact')">✉️ İletişim</a></li>
@@ -569,17 +589,29 @@
 
                 <!-- Quiz Screen -->
                 <div id="quiz-screen" class="quiz-container" style="display: none;">
-                    <button onclick="
-                        if(confirm('Sınavı sonlandırmak istediğinize emin misiniz?')) { showPage('home'); }
-                        " class="back-btn-styled" style="margin-bottom: 20px;">
-                        ← Sınavdan Çık
-                    </button>
 
-                    <div class="quiz-header">
-                        <div style="font-size: 1.2rem; font-weight: bold;">
+
+                    <div class="quiz-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <!-- Sol: Soru Sayısı -->
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #555;">
                             Soru: <span id="current-q-num">1</span> / 20
                         </div>
+
+                        <!-- Orta: Timer -->
                         <div class="timer-box" id="timer">40:00</div>
+
+                        <!-- Sağ: Kapatma Butonu (Aesthetic X) -->
+                        <button onclick="console.log('Button inline click'); window.quitQuiz();"
+                            class="close-btn-aesthetic" title="Sınavı Kapat"
+                            style="background:none; border:none; cursor:pointer; position:relative; z-index:9999;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                fill="none" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" style="pointer-events:none;">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
 
                     <div class="question-card" id="question-container">
@@ -611,9 +643,79 @@
                     <button class="btn" onclick="showPage('quiz')">Tekrar Dene</button> <!-- Reloads view logic -->
                     <button class="btn btn-outline" onclick="showPage('home')">Ana Sayfaya Dön</button>
                 </div>
+
+                <!-- DETAILED REPORT PAGE (NEW) -->
+                <div id="detailed-report-page" style="display: none; width: 100%; min-height: 80vh;">
+                    <!-- Rapor Başlığı -->
+                    <div class="report-header">
+                        <h2>📊 Kişisel Performans Raporu</h2>
+                        <span class="report-date" id="report-date"></span>
+                    </div>
+
+                    <!-- Üst Bilgi Kartı -->
+                    <div class="report-user-card">
+                        <div class="user-avatar" id="report-avatar">👤</div>
+                        <div class="user-info">
+                            <h3 id="report-username">Öğrenci Adı</h3>
+                            <p id="report-status-msg">Harika bir iş çıkardın!</p>
+                        </div>
+                        <div class="total-score-box">
+                            <span class="score-val" id="report-total-score">85</span>
+                            <span class="score-lbl">PUAN</span>
+                        </div>
+                    </div>
+
+                    <!-- İstatistik Grid -->
+                    <div class="report-stats-grid">
+                        <!-- Doğru -->
+                        <div class="stat-card correct">
+                            <div class="icon">✅</div>
+                            <div class="val" id="report-correct">18</div>
+                            <div class="lbl">Doğru</div>
+                        </div>
+                        <!-- Yanlış -->
+                        <div class="stat-card wrong">
+                            <div class="icon">❌</div>
+                            <div class="val" id="report-wrong">2</div>
+                            <div class="lbl">Yanlış</div>
+                        </div>
+                        <!-- Boş -->
+                        <div class="stat-card empty">
+                            <div class="icon">⭕</div>
+                            <div class="val" id="report-empty">0</div>
+                            <div class="lbl">Boş</div>
+                        </div>
+                        <!-- Süre -->
+                        <div class="stat-card time">
+                            <div class="icon">⏱️</div>
+                            <div class="val" id="report-time">12dk</div>
+                            <div class="lbl">Süre</div>
+                        </div>
+                        <!-- Hız (dk/soru) -->
+                        <div class="stat-card speed">
+                            <div class="icon">⚡</div>
+                            <div class="val" id="report-speed">0.6</div>
+                            <div class="lbl">dk/soru</div>
+                        </div>
+                    </div>
+
+                    <!-- Motivasyon / Analiz Kutusu -->
+                    <div class="report-analysis-box">
+                        <h3>📈 Gelişim Analizi</h3>
+                        <p id="report-analysis-text">
+                            Matematiksel temelin sağlam görünüyor. İşlem hızın gayet iyi.
+                            Yanlış yaptığın sorularda genellikle dikkatsizlik yapmış olabilirsin.
+                        </p>
+                    </div>
+
+                    <!-- Aksiyon Butonları -->
+                    <div class="report-actions">
+                        <button class="btn" onclick="startQuiz()">🔄 Testi Tekrarla</button>
+                        <button class="btn btn-outline" onclick="showPage('home')">🏠 Ana Menüye Dön</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- COLUMNIST DETAIL VIEW (NEW) -->
             <!-- COLUMNIST DETAIL VIEW (NEW) -->
             <!-- COLUMNIST DETAIL VIEW (NEW) -->
             <div id="columnist-detail"

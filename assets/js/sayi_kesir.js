@@ -23,6 +23,15 @@ window.SayiKesirMotoru = {
         </span>`;
     },
 
+    sayiyiYaziyaCevir: function (sayi, buyukHarf = false) {
+        const birler = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
+        let yazi = birler[sayi];
+        if (buyukHarf) {
+            yazi = yazi.charAt(0).toUpperCase() + yazi.slice(1);
+        }
+        return yazi;
+    },
+
     // --- SORU ÜRETİMİ ---
     soruUret: function (seviye) {
         let soruData;
